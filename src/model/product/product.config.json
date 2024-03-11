@@ -1,0 +1,95 @@
+{
+	"model_name": "Product",
+	"attributes": [
+		{
+			"name": "id",
+			"type": "number",
+			"readonly": true,
+			"schemas": [
+				"admin"
+			]
+		},
+		{
+			"name": "sku",
+			"type": "string"
+		},
+		{
+			"name": "title",
+			"type": "string"
+		},
+		{
+			"name": "description",
+			"type": "string"
+		},
+		{
+			"name": "price",
+			"type": "number"
+		},
+		{
+			"name": "createdAt",
+			"type": "Date",
+			"schemas": [
+				"admin",
+				"audit"
+			]
+		},
+		{
+			"name": "createdBy",
+			"type": "string",
+			"schemas": [
+				"admin",
+				"audit"
+			]
+		},
+		{
+			"name": "updatedAt",
+			"type": "Date",
+			"schemas": [
+				"admin",
+				"audit"
+			]
+		},
+		{
+			"name": "updatedBy",
+			"type": "string",
+			"schemas": [
+				"admin",
+				"audit"
+			]
+		}
+	],
+	"dto": [
+		"sku",
+		"title",
+		"description",
+		"price"
+	],
+	"repository": {
+		"template": "local",
+		"adapter": [
+			{
+				"name": "id",
+				"type": "string"
+			},
+			{
+				"name": "createdAt",
+				"alias": "created_at"
+			},
+			{
+				"name": "createdBy",
+				"type": "string",
+				"alias": "created_by"
+			},
+			{
+				"name": "updatedAt",
+				"alias": "updated_at"
+			},
+			{
+				"name": "updatedBy",
+				"type": "string",
+				"alias": "updated_by",
+				"exclude": true
+			}
+		]
+	}
+}

@@ -1,0 +1,150 @@
+import {
+    Injectable
+    // InternalServerErrorException,
+    // NotFoundException
+} from '@nestjs/common';
+import {
+    Exclude,
+    Expose,
+    Type,
+    instanceToPlain,
+    plainToClass,
+    plainToInstance
+} from 'class-transformer';
+import { <%-model_name%> } from './<%-model_name.toLowerCase()%>.model';
+import { Create<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.create';
+import { Update<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.update';
+import { User } from '@model/user/user.model';
+
+class <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+        for (const adaptItem of repository.adapter) {
+            if (!adaptItem.exclude) {
+            let adapItemConvertType = undefined;
+            let adapItemType = attributes.find(i=>i.name==adaptItem.name).type
+        
+            if (adaptItem.type){
+                adapItemType = adaptItem.type;
+                switch(adaptItem.type){
+                    case 'string':
+                        adapItemConvertType = 'String';
+                        break;
+                    case 'number':
+                        adapItemConvertType = 'Number';
+                        break;
+                    case 'boolean':
+                        adapItemConvertType = 'Boolean';
+                        break;
+                    case 'Date':
+                        adapItemConvertType = 'Date';
+                        break;
+                }
+            }
+            if (adapItemConvertType) {%>
+    @Type(() => <%-adapItemConvertType%>)<%}
+            if (adaptItem.alias) {%>
+    @Expose({ toPlainOnly: true, name: '<%-adaptItem.name%>' })<%}%>
+    <%-adaptItem.alias || adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+}
+@Expose({ toClassOnly: true })
+class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+    for (const adaptItem of repository.adapter) {
+            if (adaptItem.exclude) {
+                let adapItemType = attributes.find(i=>i.name==adaptItem.name).type%>
+    @Exclude()
+    <%-adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+}
+
+@Injectable()
+export class <%-model_name%>sRepository {
+    private <%-model_name.toLowerCase()%>s: Record&#60;string, any&#62; = [];
+    async findOne(
+        id: number,
+        schemas?: string | string[]
+    ): Promise&#60;<%-model_name%> | undefined&#62; {
+        return this.getInstance(
+            this.adapt(this.<%-model_name.toLowerCase()%>s.find((item) => item.id === id)),
+            schemas
+        );
+    }
+    async findAll(schemas?: string | string[]) {
+        return this.getInstance(this.adapt(this.<%-model_name.toLowerCase()%>s), schemas);
+    }
+    async create(
+        create<%-model_name%>Dto: Create<%-model_name%>Dto,
+        user?: User,
+        schemas: string | string[] = ['admin']
+    ) {
+        const new<%-model_name%> = this.getInstance(
+            this.adapt({
+                ...create<%-model_name%>Dto,
+                id: Object.entries(this.<%-model_name.toLowerCase()%>s).length + 1,
+                createdAt: new Date(),
+                createdBy: user?.id
+            }),
+            schemas
+        );
+
+        this.<%-model_name.toLowerCase()%>s.push(this.adaptForCreate(new<%-model_name%>));
+
+        return new<%-model_name%>;
+    }
+    async update(
+        id: number,
+        update<%-model_name%>Dto: Update<%-model_name%>Dto,
+        user?: User,
+        schemas: string | string[] = ['admin']
+    ) {
+        const index = Object.entries(this.<%-model_name.toLowerCase()%>s).findIndex(
+            (i: any) => parseInt(i[1].id) === id
+        );
+        if (index >= 0) {
+            const updated<%-model_name%> = {
+                ...this.adapt(this.<%-model_name.toLowerCase()%>s[index]),
+                ...update<%-model_name%>Dto,
+                updatedAt: new Date(),
+                updatedBy: user?.id
+            };
+            this.<%-model_name.toLowerCase()%>s[index] = this.adaptForCreate(updated<%-model_name%>);
+
+            return this.getInstance(updated<%-model_name%>, schemas);
+        }
+    }
+    async remove(id: number) {
+        const index = Object.entries(this.<%-model_name.toLowerCase()%>s).findIndex(
+            (i: any) => i[1].id === id
+        );
+        if (index >= 0) {
+            this.<%-model_name.toLowerCase()%>s.splice(index, 1);
+        }
+        return { status: 'ok' };
+    }
+    //*******************************************************************/
+    //*  G E N E R I C   R E P O S I T O R Y
+    //*
+    private adapt = (data: any) =>
+        instanceToPlain(plainToInstance(<%-model_name%>Adapter, data));
+
+    private adaptForCreate = (data: any) =>
+        plainToClass(Create<%-model_name%>Adapter, data);
+
+    private getInstance = (value: any, schemas?: string[] | string) =>
+        plainToInstance(
+            <%-model_name%>,
+            value,
+            schemas
+                ? {
+                    groups: typeof schemas == 'string' ? [schemas] : schemas
+                }
+                : undefined
+        );
+    //*
+    //*********************************************************************/
+}

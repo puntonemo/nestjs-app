@@ -1,0 +1,7 @@
+import { IsOptional } from 'class-validator';
+
+export class Create<%-model_name%>Dto {<%
+    for (const item of config.dto) {%>
+    @IsOptional()
+    <%-item%>: <%-config.attributes.find(i=>i.name==item)?.type%>;<%}%>
+}

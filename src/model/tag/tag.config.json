@@ -1,0 +1,65 @@
+{
+    "model_name" : "Tag",
+    "attributes" : [
+        {
+            "name": "id",
+            "type": "string"
+        },
+        {
+            "name": "name",
+            "type": "string"
+        },
+        {
+            "name": "color",
+            "type": "string"
+        },
+        {
+            "name": "createdAt",
+            "type": "Date",
+            "schemas" : ["admin", "audit"]
+        },
+        {
+            "name": "createdBy",
+            "type": "string",
+            "schemas" : ["admin", "audit"]
+        },
+        {
+            "name": "updatedAt",
+            "type": "Date",
+            "schemas" : ["admin", "audit"]
+        },
+        {
+            "name": "updatedBy",
+            "type": "string",
+            "schemas" : ["admin", "audit"]
+        }
+    ],
+    "dto": ["name", "color"],
+    "repository" : {
+        "template" : "supabase",
+        "adapter" : [
+            {
+                "name": "id",
+                "type": "number"
+            },
+            {
+                "name": "createdAt",
+                "exclude" : true
+            },
+            {
+                "name": "createdBy",
+                "exclude" : true
+            },
+            {
+                "name": "updatedAt",
+                "exclude" : true
+            },
+            {
+                "name": "updatedBy",
+                "exclude" : true
+            }
+        ]
+    },
+    "generate_controller": true,
+    "generate_service": true
+}

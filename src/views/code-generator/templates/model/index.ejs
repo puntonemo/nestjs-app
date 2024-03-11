@@ -1,0 +1,28 @@
+
+/*** index.ts *****************************************************/
+<%-include('files/index', config) -%>
+
+/*** <%-config.model_name.toLowerCase()%>.entity.ts *****************************************************/
+<%-include('files/entity', config) -%>
+<%if(config.repository){
+    const repositoryTemplate = 'files/repository_' + config.repository.template; %>
+/*** <%-config.model_name.toLowerCase()%>.repository.<%-config.repository.template%>.ts *****************************************************/
+<%-include(repositoryTemplate, config) -%><%}%>
+<%if(config.dto){%>
+/*** <%-config.model_name.toLowerCase()%>.dto.create.ts *****************************************************/
+<%-include('files/dto_create', config) -%>
+
+/*** <%-config.model_name.toLowerCase()%>.dto.find.ts *****************************************************/
+<%-include('files/dto_find', config) -%>
+
+/*** <%-config.model_name.toLowerCase()%>.dto.update.ts *****************************************************/
+<%-include('files/dto_update', config) -%>
+<%}
+if(config.generate_controller){%>
+/*** <%-config.model_name.toLowerCase()%>s.controller.ts *****************************************************/
+<%-include('files/controller', config) -%>
+<%}
+if(config.generate_service){%>
+/*** <%-config.model_name.toLowerCase()%>s.service.ts *****************************************************/
+<%-include('files/service', config) -%>    
+<%}%>

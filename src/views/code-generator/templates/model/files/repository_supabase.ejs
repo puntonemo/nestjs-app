@@ -1,0 +1,190 @@
+import {
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common';
+import {
+    Exclude,
+    Expose,
+    Type,
+    instanceToPlain,
+    plainToClass,
+    plainToInstance
+} from 'class-transformer';
+import { <%-model_name%>, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.model';
+import { User } from '@model/user/user.model';
+import { SupabaseService } from '@lib/supabase';
+
+class <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+        for (const adaptItem of repository.adapter) {
+            if (!adaptItem.exclude) {
+            let adapItemConvertType = undefined;
+            let adapItemType = attributes.find(i=>i.name==adaptItem.name).type
+        
+            if (adaptItem.type){
+                adapItemType = adaptItem.type;
+                switch(adaptItem.type){
+                    case 'string':
+                        adapItemConvertType = 'String';
+                        break;
+                    case 'number':
+                        adapItemConvertType = 'Number';
+                        break;
+                    case 'boolean':
+                        adapItemConvertType = 'Boolean';
+                        break;
+                    case 'Date':
+                        adapItemConvertType = 'Date';
+                        break;
+                }
+            }
+            if (adapItemConvertType) {%>
+    @Type(() => <%-adapItemConvertType%>)<%}
+            if (adaptItem.alias) {%>
+    @Expose({ toPlainOnly: true, name: '<%-adaptItem.name%>' })<%}%>
+    <%-adaptItem.alias || adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+}
+@Expose({ toClassOnly: true })
+class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+    for (const adaptItem of repository.adapter) {
+            if (adaptItem.exclude) {
+                let adapItemType = attributes.find(i=>i.name==adaptItem.name).type%>
+    @Exclude()
+    <%-adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+}
+
+const tableName = '<%-model_name.toLowerCase()%>s';
+const pkColumn = 'id';
+
+@Injectable()
+export class <%-model_name%>sRepository {
+    constructor(private readonly supabase: SupabaseService) {}
+    async create(create<%-model_name%>Dto: Create<%-model_name%>Dto, user?: User) {
+        const new<%-model_name%> = {
+            ...create<%-model_name%>Dto,
+            createdBy: user?.id,
+            createdAt: new Date().toISOString()
+        };
+
+        const new<%-model_name%>Adated = this.adaptForCreate(new<%-model_name%>);
+
+        const { data, error } = await this.supabase
+            .getClient()
+            .from(tableName)
+            .insert(new<%-model_name%>Adated)
+            .select()
+            .single();
+
+        if (error) throw new InternalServerErrorException(error);
+
+        return this.getInstance(this.adapt(data), 'admin');
+    }
+    async findAll(filters?: Find<%-model_name%>Dto) {
+        const page = filters?.page ?? 1;
+        const pageSize = filters?.pageSize ?? 10;
+        const countOptions = filters?.count
+            ? {
+                  count: filters.count,
+                  head: filters.data ?? true ? false : true
+              }
+            : undefined;
+
+        const select = ['*'];
+        const query = this.supabase
+            .getClient()
+            .from(tableName)
+            .select(select.join(','), countOptions);
+
+        if (filters?.order)
+            query.order(filters.order ?? pkColumn, {
+                ascending: filters.ascending ?? true
+            });
+        if (filters?.id) {
+            query.eq('id', filters.id);
+        }
+
+        query.range((page - 1) * pageSize, page * pageSize - 1);
+
+        const { data, error, count } = await query;
+
+        if (error) throw new InternalServerErrorException(error);
+
+        return {
+            data: this.getInstance(this.adapt(data), 'admin') ?? [],
+            count: count ?? undefined
+        };
+    }
+    async findOne(id: number) {
+        const { data } = await this.findAll({ id } as Find<%-model_name%>Dto);
+
+        if (!data || (data as any[]).length < 1) throw new NotFoundException();
+
+        return this.getInstance(this.adapt(data[0]), 'admin');
+    }
+    async update(id: number, update<%-model_name%>Dto: Update<%-model_name%>Dto, user?: User) {
+        const existing<%-model_name%> = await this.findOne(id);
+
+        if (!existing<%-model_name%>) throw new NotFoundException();
+
+        const update<%-model_name%> = {
+            ...update<%-model_name%>Dto,
+            updatedBy: user ? parseInt(user.id) : null,
+            updatedAt: new Date().toISOString()
+        };
+        const adapted<%-model_name%> = {
+            ...this.adaptForCreate(existing<%-model_name%>),
+            ...this.adaptForCreate(update<%-model_name%>)
+        };
+
+        const { data, error } = await this.supabase
+            .getClient()
+            .from(tableName)
+            .upsert(adapted<%-model_name%>)
+            .select()
+            .single();
+
+        if (error) throw new InternalServerErrorException(error);
+
+        return this.getInstance(this.adapt(data), 'admin');
+    }
+    async remove(id: number) {
+        const { error } = await this.supabase
+            .getClient()
+            .from(tableName)
+            .delete()
+            .eq(pkColumn, id);
+
+        if (error) throw new InternalServerErrorException(error);
+
+        return { status: 'ok' };
+    }
+    //*******************************************************************/
+    //*  G E N E R I C   R E P O S I T O R Y
+    //*
+    private adapt = (data: any) =>
+        instanceToPlain(plainToInstance(<%-model_name%>Adapter, data));
+
+    private adaptForCreate = (data: any) =>
+        plainToClass(Create<%-model_name%>Adapter, data);
+
+    private getInstance = (value: any, schemas?: string[] | string) =>
+        plainToInstance(
+            <%-model_name%>,
+            value,
+            schemas
+                ? {
+                    groups: typeof schemas == 'string' ? [schemas] : schemas
+                }
+                : undefined
+        );
+    //*
+    //*********************************************************************/
+}
