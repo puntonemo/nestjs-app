@@ -32,7 +32,6 @@ jobs:
           npm install -g @nestjs/cli
           npm install
           npm run build --if-present
-#          npm run test --if-present
           popd
 
       - name: Upload artifact for deployment job
