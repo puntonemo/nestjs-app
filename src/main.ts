@@ -19,6 +19,7 @@ async function bootstrap() {
     });
 
     const configService = app.get<ConfigService>(ConfigService);
+    const PORT = configService.get('PORT') || 3000;
 
     app.setBaseViewsDir(join(__dirname, '.', 'views'));
     // app.useStaticAssets(join(__dirname, '..', 'views/static'));
@@ -44,6 +45,6 @@ async function bootstrap() {
         SwaggerModule.setup(configService.get('SWAGGER_PATH'), app, document);
     }
 
-    await app.listen(configService.get('PORT'));
+    await app.listen(PORT);
 }
 bootstrap();
