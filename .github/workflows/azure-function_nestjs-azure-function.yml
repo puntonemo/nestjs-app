@@ -30,7 +30,7 @@ jobs:
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           npm install -g @nestjs/cli
-          npm install
+          npm install --force
           npm run build --if-present
           popd
 
