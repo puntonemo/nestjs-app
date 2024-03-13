@@ -32,12 +32,20 @@ $ pnpm run test:e2e
 $ pnpm run test:cov
 ```
 
-## Docker test
+## Docker  Build
 
 ```bash
 docker build -t nestjs-app .
 
-docker run -p3000:3000 nestjs-app
+docker run -p4000:4000 nestjs-app
+```
+
+## Docker Compose
+
+```bash
+docker-compose up -d [--build]
+
+docker-compose down
 ```
 
 ## Support
