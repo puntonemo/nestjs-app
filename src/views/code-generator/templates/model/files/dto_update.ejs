@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/swagger';
-import { Create<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.create';
+import { Create<%-model_name%>Dto } from './<%-model_name_lowercase%>.dto.create';
 
 export class Update<%-model_name%>Dto extends PartialType(Create<%-model_name%>Dto) {}

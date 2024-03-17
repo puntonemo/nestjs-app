@@ -10,8 +10,8 @@ import {
     // UseGuards
     // UseInterceptors
 } from '@nestjs/common';
-import { <%-model_name%>sService } from './<%-model_name.toLowerCase()%>s.service';
-import { Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '@model/<%-model_name.toLowerCase()%>/<%-model_name.toLowerCase()%>.model';
+import { <%-model_name_plural%>Service } from './<%-model_name_plural_lowercase%>.service';
+import { Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '@model/<%-model_name_lowercase%>';
 import { User } from '@model/user/user.model';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
 // import { isPublic } from '@lib/auth/decorators/isPublic.decorator';
@@ -21,26 +21,26 @@ import { AuthUser } from '@lib/auth/decorators/user.decorator';
 // import { SchemaFromRol } from '@lib/core/interceptors/ClassSerializerSchema.decorators';
 // import { ClassSerializerSchemaInterceptor } from '@lib/core/interceptors/ClassSerializerSchema';
 
-@Controller('<%-model_name.toLowerCase()%>s')
+@Controller('<%-model_name_plural_lowercase%>')
 // @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 // @UseInterceptors(ClassSerializerSchemaInterceptor)
-export class <%-model_name%>sController {
-    constructor(private readonly <%-model_name.toLowerCase()%>sService: <%-model_name%>sService) {}
+export class <%-model_name_plural%>Controller {
+    constructor(private readonly <%-model_name_plural_lowercase%>Service: <%-model_name_plural%>Service) {}
 
     @Post()
     create(@Body() create<%-model_name%>Dto: Create<%-model_name%>Dto, @AuthUser() user: User) {
-        return this.<%-model_name.toLowerCase()%>sService.create(create<%-model_name%>Dto, user);
+        return this.<%-model_name_plural_lowercase%>Service.create(create<%-model_name%>Dto, user);
     }
 
     @Get()
     //@isPublic()
     findAll(@Query() filters: Find<%-model_name%>Dto) {
-        return this.<%-model_name.toLowerCase()%>sService.findAll(filters);
+        return this.<%-model_name_plural_lowercase%>Service.findAll(filters);
     }
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.<%-model_name.toLowerCase()%>sService.findOne(+id);
+        return this.<%-model_name_plural_lowercase%>Service.findOne(+id);
     }
 
     @Patch(':id')
@@ -49,11 +49,11 @@ export class <%-model_name%>sController {
         @Body() update<%-model_name%>Dto: Update<%-model_name%>Dto,
         @AuthUser() user: User
     ) {
-        return this.<%-model_name.toLowerCase()%>sService.update(+id, update<%-model_name%>Dto, user);
+        return this.<%-model_name_plural_lowercase%>Service.update(+id, update<%-model_name%>Dto, user);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.<%-model_name.toLowerCase()%>sService.remove(+id);
+        return this.<%-model_name_plural_lowercase%>Service.remove(+id);
     }
 }

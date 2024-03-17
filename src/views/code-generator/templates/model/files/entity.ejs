@@ -4,13 +4,6 @@ import {
     instanceToPlain
 } from 'class-transformer';
 
-import { <%-model_name%>sRepository } from './<%-model_name.toLowerCase()%>.repository.<%-repository.template%>';
-import { Create<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.create';
-import { Find<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.find';
-import { Update<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.update';
-
-export { <%-model_name%>sRepository, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto };
-
 export class <%-model_name%> {<%if(attributes) {%>
     //*******************************************************************/
     //* ATTRIBUTES<%

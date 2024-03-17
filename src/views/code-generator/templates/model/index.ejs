@@ -1,28 +1,41 @@
 
+<%
+    let model_name_lowercase = config.model_name_lowercase ? config.model_name_lowercase.toLowerCase() : config.model_name.toLowerCase();
+    let model_name_plural = config.model_name_plural ?  config.model_name_plural : config.model_name + 's';
+    let model_name_plural_lowercase = config.model_name_plural_lowercase ?  config.model_name_plural_lowercase.toLowerCase() : model_name_lowercase + 's';
+    config.model_name_lowercase = model_name_lowercase;
+    config.model_name_plural = model_name_plural;
+    config.model_name_plural_lowercase = model_name_plural_lowercase;
+%>
+/* model_name = <%=config.model_name%>
+/* model_name_lowercase = <%=model_name_lowercase%>
+/* model_name_plural = <%=model_name_plural%>
+/* model_name_plural_lowercase = <%=model_name_plural_lowercase%>
+
 /*** index.ts *****************************************************/
 <%-include('files/index', config) -%>
 
-/*** <%-config.model_name.toLowerCase()%>.entity.ts *****************************************************/
+/*** <%-config.model_name_lowercase%>.entity.ts *****************************************************/
 <%-include('files/entity', config) -%>
 <%if(config.repository){
     const repositoryTemplate = 'files/repository_' + config.repository.template; %>
-/*** <%-config.model_name.toLowerCase()%>.repository.<%-config.repository.template%>.ts *****************************************************/
+/*** <%-config.model_name_lowercase%>.repository.<%-config.repository.template%>.ts *****************************************************/
 <%-include(repositoryTemplate, config) -%><%}%>
 <%if(config.dto){%>
-/*** <%-config.model_name.toLowerCase()%>.dto.create.ts *****************************************************/
+/*** <%-config.model_name_lowercase%>.dto.create.ts *****************************************************/
 <%-include('files/dto_create', config) -%>
 
-/*** <%-config.model_name.toLowerCase()%>.dto.find.ts *****************************************************/
+/*** <%-config.model_name_lowercase%>.dto.find.ts *****************************************************/
 <%-include('files/dto_find', config) -%>
 
-/*** <%-config.model_name.toLowerCase()%>.dto.update.ts *****************************************************/
+/*** <%-config.model_name_lowercase%>.dto.update.ts *****************************************************/
 <%-include('files/dto_update', config) -%>
 <%}
 if(config.generate_controller){%>
-/*** <%-config.model_name.toLowerCase()%>s.controller.ts *****************************************************/
+/*** <%-model_name_plural_lowercase%>.controller.ts *****************************************************/
 <%-include('files/controller', config) -%>
 <%}
 if(config.generate_service){%>
-/*** <%-config.model_name.toLowerCase()%>s.service.ts *****************************************************/
+/*** <%-model_name_plural_lowercase%>.service.ts *****************************************************/
 <%-include('files/service', config) -%>    
 <%}%>
