@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { FindUserRolDto } from '@model/user-rol/dto/find-user-rol.dto';
-import { CreateUserRolDto } from '@model/user-rol/dto/create-user-rol.dto';
-import { UpdateUserRolDto } from '@model/user-rol/dto/update-user-rol.dto';
-import { UserRolesRepository } from '@model/user-rol/user-rol.model';
-import { User } from '@model/users/users.entity';
+import {
+    FindUserRolDto,
+    CreateUserRolDto,
+    UpdateUserRolDto,
+    UserRolesRepository
+} from '@model/user-roles';
+import { User } from '@model/users';
 
 @Injectable()
 export class UserRolesService {

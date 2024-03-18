@@ -4,7 +4,7 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common';
-import { UserRol } from '@model/user-rol/user-rol.model';
+import { UserRol } from '@model/user-roles/user-roles.entity';
 import {
     Exclude,
     Expose,
@@ -13,9 +13,9 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { UpdateUserRolDto } from '../dto/update-user-rol.dto';
-import { FindUserRolDto } from '../dto/find-user-rol.dto';
-import { CreateUserRolDto } from '../dto/create-user-rol.dto';
+import { UpdateUserRolDto } from './user-roles.dto.update';
+import { FindUserRolDto } from './user-roles.dto.find';
+import { CreateUserRolDto } from './user-roles.dto.create';
 import { User } from '@model/users/users.entity';
 
 class UserRolAdapter {

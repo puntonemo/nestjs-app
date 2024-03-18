@@ -5,9 +5,6 @@ import {
     plainToInstance
 } from 'class-transformer';
 
-import { UserRolesRepository } from './repository/user-rol.supabase.repository';
-export { UserRolesRepository };
-
 export class UserRol {
     id?: string;
     code?: string;
