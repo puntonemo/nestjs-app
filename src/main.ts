@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as express from 'express';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 
 async function bootstrap() {
+    const logger = new Logger('APP');
     const validationPipeOptions = {
         whitelist: true,
         forbidNonWhitelisted: true,
@@ -46,5 +47,6 @@ async function bootstrap() {
     }
 
     await app.listen(PORT);
+    logger.log(`Gateway is running on ${await app.getUrl()}`);
 }
 bootstrap();
