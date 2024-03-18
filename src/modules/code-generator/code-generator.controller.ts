@@ -28,36 +28,45 @@ export class CodeGeneratorController {
 
 const codegen = (fullcode: string, config: any) => {
     const modelName = config.model_name;
-    const beginOfText = `/*** begin of `;
     console.log(modelName);
-    let index = -1;
 
     /* \/\*\*\*\sbegin of\s(.[^\*]*) */
-    do {
-        index = fullcode.indexOf(beginOfText);
-    } while (index > 0);
 
-    const indexFileText = 'index.ts';
-    const entityFileText = 'product.entity.ts';
+    const reModelPath = /\/\/\s*model_path\s*=*(.[^\r\n]*)\r*\n*/g;
+    const rerModelPath = [...fullcode.matchAll(reModelPath)];
 
-    extractFragment(fullcode, indexFileText);
-    extractFragment(fullcode, entityFileText);
+    console.log(rerModelPath);
+    if (rerModelPath.length != 1) return;
+    const fragmentPath = rerModelPath[0][1].trim();
+    const regexp = /\/\*\*\*\sbegin of\s(.[^\*]*)/g;
+    const array = [...fullcode.matchAll(regexp)];
+
+    for (const item of array) {
+        extractFragment(fullcode, item[1].trim(), fragmentPath);
+    }
 };
 
-const extractFragment = (fullcode: string, fragmentName: string) => {
-    const index = fullcode.indexOf(`/*** ${fragmentName}`);
+const extractFragment = (
+    fullcode: string,
+    fragmentName: string,
+    fragmentPath: string
+) => {
+    const index = fullcode.indexOf(`${fragmentName}`);
     const endOfBlockText = `end of ${fragmentName}`;
     const endOfCommentText = '***/';
     const endOfBlock = fullcode.indexOf(endOfBlockText, index);
-    const fragmentPath = '/src/model';
+    //const fragmentPath = '/src/model';
     const endOfComment = fullcode.indexOf(endOfCommentText, index);
     if (endOfBlock > 0 && endOfComment > 0) {
-        const codeBlock = fullcode.substring(endOfComment + 6, endOfBlock - 5);
-        console.log(codeBlock);
-        const filePath = path.join(process.env.PWD, fragmentPath);
-        const fileName = path.join(filePath, `/${fragmentName}.txt`);
+        const codeBlock = fullcode.substring(endOfComment + 6, endOfBlock - 4);
+        //console.log(codeBlock);
+        const filePath = path.join(
+            process.env.PWD || process.env.INIT_CWD,
+            fragmentPath
+        );
+        const fileName = path.join(filePath, `/${fragmentName}`);
         console.log(fileName);
         fs.mkdirSync(filePath, { recursive: true } as any);
-        //fs.writeFileSync(fileName, codeBlock);
+        fs.writeFileSync(fileName, codeBlock);
     }
 };

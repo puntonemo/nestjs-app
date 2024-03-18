@@ -7,40 +7,45 @@
     config.model_name_plural = model_name_plural;
     config.model_name_plural_lowercase = model_name_plural_lowercase;
 %>
-/* model_name = <%=config.model_name%> */
-/* model_name_lowercase = <%=model_name_lowercase%> */
-/* model_name_plural = <%=model_name_plural%> */
-/* model_name_plural_lowercase = <%=model_name_plural_lowercase%> */
-/* model_path = /src/model/<%=model_name_lowercase%> */
+// model_name = <%=config.model_name%>
+// model_name_lowercase = <%=model_name_lowercase%>
+// model_name_plural = <%=model_name_plural%>
+// model_name_plural_lowercase = <%=model_name_plural_lowercase%>
+// model_path = /src/model/<%=model_name_lowercase%>
 
 /*** begin of index.ts ****************************************************/
 <%-include('files/index', config) -%>
-/*** end of index.ts **********************************************/
+//end of index.ts
 
 /*** begin of <%-config.model_name_lowercase%>.entity.ts *****************************************************/
 <%-include('files/entity', config) -%>
 <%if(config.repository){
     const repositoryTemplate = 'files/repository_' + config.repository.template; %>
-/*** end of <%-config.model_name_lowercase%>.entity.ts **********************************************/
+//end of <%-config.model_name_lowercase%>.entity.ts
 
 /*** begin of <%-config.model_name_lowercase%>.repository.<%-config.repository.template%>.ts *****************************************************/
 <%-include(repositoryTemplate, config) -%><%}%>
-
+//end of <%-config.model_name_lowercase%>.repository.<%-config.repository.template%>.ts
 <%if(config.dto){%>
 /*** begin of <%-config.model_name_lowercase%>.dto.create.ts *****************************************************/
 <%-include('files/dto_create', config) -%>
+//end of <%-config.model_name_lowercase%>.dto.create.ts
 
 /*** begin of <%-config.model_name_lowercase%>.dto.find.ts *****************************************************/
 <%-include('files/dto_find', config) -%>
+//end of <%-config.model_name_lowercase%>.dto.find.ts
 
 /*** begin of <%-config.model_name_lowercase%>.dto.update.ts *****************************************************/
 <%-include('files/dto_update', config) -%>
+//end of <%-config.model_name_lowercase%>.dto.update.ts
 <%}
 if(config.generate_controller){%>
 /*** begin of <%-model_name_plural_lowercase%>.controller.ts *****************************************************/
 <%-include('files/controller', config) -%>
+//end of <%-model_name_plural_lowercase%>.controller.ts
 <%}
 if(config.generate_service){%>
 /*** begin of <%-model_name_plural_lowercase%>.service.ts *****************************************************/
-<%-include('files/service', config) -%>    
+<%-include('files/service', config) -%>
+//end of <%-model_name_plural_lowercase%>.service.ts
 <%}%>
