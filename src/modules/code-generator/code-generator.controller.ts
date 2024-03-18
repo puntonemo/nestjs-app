@@ -28,7 +28,15 @@ export class CodeGeneratorController {
 
 const codegen = (fullcode: string, config: any) => {
     const modelName = config.model_name;
+    const beginOfText = `/*** begin of `;
     console.log(modelName);
+    let index = -1;
+
+    /* \/\*\*\*\sbegin of\s(.[^\*]*) */
+    do {
+        index = fullcode.indexOf(beginOfText);
+    } while (index > 0);
+
     const indexFileText = 'index.ts';
     const entityFileText = 'product.entity.ts';
 
@@ -40,27 +48,16 @@ const extractFragment = (fullcode: string, fragmentName: string) => {
     const index = fullcode.indexOf(`/*** ${fragmentName}`);
     const endOfBlockText = `end of ${fragmentName}`;
     const endOfCommentText = '***/';
-    const beginOfPathText = `${fragmentName} *`;
     const endOfBlock = fullcode.indexOf(endOfBlockText, index);
-    const beginOfPath = fullcode.indexOf(beginOfPathText, index);
-    const endOfPath = fullcode.indexOf(
-        `*`,
-        beginOfPath + beginOfPathText.length
-    );
-    const fragmentPath = fullcode
-        .substring(beginOfPath + beginOfPathText.length, endOfPath)
-        .trim();
+    const fragmentPath = '/src/model';
     const endOfComment = fullcode.indexOf(endOfCommentText, index);
     if (endOfBlock > 0 && endOfComment > 0) {
         const codeBlock = fullcode.substring(endOfComment + 6, endOfBlock - 5);
         console.log(codeBlock);
-        const filePath = path.join(
-            process.env.PWD,
-            fragmentPath,
-            `/${fragmentName}.txt`
-        );
-        console.log(filePath);
-        fs.mkdir(filePath, { recursive: true } as any);
-        //fs.writeFileSync(filePath, codeBlock);
+        const filePath = path.join(process.env.PWD, fragmentPath);
+        const fileName = path.join(filePath, `/${fragmentName}.txt`);
+        console.log(fileName);
+        fs.mkdirSync(filePath, { recursive: true } as any);
+        //fs.writeFileSync(fileName, codeBlock);
     }
 };
