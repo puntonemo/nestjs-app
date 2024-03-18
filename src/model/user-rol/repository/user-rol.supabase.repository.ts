@@ -16,7 +16,7 @@ import {
 import { UpdateUserRolDto } from '../dto/update-user-rol.dto';
 import { FindUserRolDto } from '../dto/find-user-rol.dto';
 import { CreateUserRolDto } from '../dto/create-user-rol.dto';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 
 class UserRolAdapter {
     @Expose({ toPlainOnly: true, name: 'byDefault' })

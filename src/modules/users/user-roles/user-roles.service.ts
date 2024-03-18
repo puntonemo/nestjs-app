@@ -3,7 +3,7 @@ import { FindUserRolDto } from '@model/user-rol/dto/find-user-rol.dto';
 import { CreateUserRolDto } from '@model/user-rol/dto/create-user-rol.dto';
 import { UpdateUserRolDto } from '@model/user-rol/dto/update-user-rol.dto';
 import { UserRolesRepository } from '@model/user-rol/user-rol.model';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 
 @Injectable()
 export class UserRolesService {

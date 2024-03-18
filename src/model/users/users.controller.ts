@@ -10,11 +10,11 @@ import {
     Query
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from '@model/user/dto/create-user.dto';
-import { UpdateUserDto } from '@model/user/dto/update-user.dto';
+import { CreateUserDto } from '@model/users/users.dto.create';
+import { UpdateUserDto } from '@model/users/users.dto.update';
 import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
-import { FindUserDto } from '@model/user/dto/find-user.dto';
-import { User } from '@model/user/user.model';
+import { FindUserDto } from '@model/users/users.dto.find';
+import { User } from '@model/users/users.entity';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
 import { Permission } from '@lib/auth/decorators/permission.decorator';
 import { PermissionsGuard } from '@lib/auth/guards/permission.guard';

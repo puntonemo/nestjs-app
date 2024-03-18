@@ -1,9 +1,6 @@
 import { Exclude, Expose, instanceToPlain } from 'class-transformer';
 import * as crypto from 'crypto';
 
-import { UsersRepository } from './repository/user.supabase.repository';
-export { UsersRepository };
-
 const HASH_ALGORITHM = `sha512`;
 const HASH_LENGTH = 64;
 const HASH_ITERATIONS = 1000;

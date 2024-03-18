@@ -14,7 +14,7 @@ import { FindUserRolDto } from '@model/user-rol/dto/find-user-rol.dto';
 import { CreateUserRolDto } from '@model/user-rol/dto/create-user-rol.dto';
 import { UpdateUserRolDto } from '@model/user-rol/dto/update-user-rol.dto';
 import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
 import { Permission } from '@lib/auth/decorators/permission.decorator';
 import { PermissionsGuard } from '@lib/auth/guards/permission.guard';

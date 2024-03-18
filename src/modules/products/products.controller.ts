@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto, UpdateProductDto } from '@model/product';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
 // import { isPublic } from '@lib/auth/decorators/isPublic.decorator';
 // import { Rol } from '@lib/auth/decorators/rol.decorator';

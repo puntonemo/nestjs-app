@@ -12,7 +12,7 @@ import {
     plainToInstance
 } from 'class-transformer';
 import { Product, CreateProductDto, UpdateProductDto } from '.';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 
 class ProductAdapter {
     @Type(() => String)

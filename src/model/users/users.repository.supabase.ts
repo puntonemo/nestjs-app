@@ -11,10 +11,7 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common';
-import { User } from '@model/user/user.model';
-import { FindUserDto } from '@model/user/dto/find-user.dto';
-import { CreateUserDto } from '@model/user/dto/create-user.dto';
-import { UpdateUserDto } from '@model/user/dto/update-user.dto';
+import { User, FindUserDto, CreateUserDto, UpdateUserDto } from '.';
 import { SupabaseService } from '@lib/database';
 
 const tableName = 'users';
@@ -204,8 +201,8 @@ export class UsersRepository {
             value,
             schemas
                 ? {
-                    groups: typeof schemas == 'string' ? [schemas] : schemas
-                }
+                      groups: typeof schemas == 'string' ? [schemas] : schemas
+                  }
                 : undefined
         );
     //*

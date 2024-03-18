@@ -12,7 +12,7 @@ import {
     plainToInstance
 } from 'class-transformer';
 import { Tag, CreateTagDto, FindTagDto, UpdateTagDto } from './tag.model';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 import { SupabaseService } from '@lib/database';
 
 class TagAdapter {

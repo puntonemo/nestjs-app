@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 import {
     ProductsLocalRepository,
     CreateProductDto,

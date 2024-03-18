@@ -1,5 +1,5 @@
 // import { Injectable } from '@nestjs/common';
-import { User } from '@model/user/user.model';
+import { User } from '.';
 import { plainToInstance } from 'class-transformer';
 
 // @Injectable()
@@ -44,8 +44,8 @@ export class UsersRepository {
             value,
             schemas
                 ? {
-                    groups: typeof schemas == 'string' ? [schemas] : schemas
-                }
+                      groups: typeof schemas == 'string' ? [schemas] : schemas
+                  }
                 : undefined
         );
 }
