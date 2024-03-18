@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@model/users/users.entity';
+import { User } from '@model/users';
 import {
     TagsRepository,
     CreateTagDto,
     FindTagDto,
     UpdateTagDto
-} from '@model/tag/tag.model';
+} from '@model/tags';
 
 @Injectable()
 export class TagsService {

@@ -2,10 +2,11 @@ import { Module } from '@nestjs/common';
 import { <%=model_name_plural%>Service } from '@model/<%-model_name_plural_lowercase%>/<%-model_name_plural_lowercase%>.service';
 import { <%=model_name_plural%>Controller } from '@model/<%-model_name_plural_lowercase%>/<%-model_name_plural_lowercase%>.controller';
 import { <%=model_name_plural%>Repository } from '@model/<%-model_name_plural_lowercase%>';
+//import { SupabaseService } from '@lib/database';
 
 @Module({
     controllers: [<%=model_name_plural%>Controller],
-    providers: [<%=model_name_plural%>Service, <%=model_name_plural%>Repository]
+    providers: [<%=model_name_plural%>Service, <%=model_name_plural%>Repository] // SupabaseService
 })
 export class <%=model_name_plural%>Module {}
 

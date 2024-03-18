@@ -10,14 +10,14 @@ import {
     // UseGuards
     // UseInterceptors
 } from '@nestjs/common';
-import { TagsService } from './tags.service';
-import { CreateTagDto, FindTagDto, UpdateTagDto } from '@model/tag/tag.model';
-import { User } from '@model/users/users.entity';
+import { TagsService } from '@model/tags/tags.service';
+import { CreateTagDto, FindTagDto, UpdateTagDto } from '@model/tags';
+import { User } from '@model/users';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
-// import { isPublic } from '@@lib/auth/decorators/isPublic.decorator';
-// import { Rol } from '@@lib/auth/decorators/rol.decorator';
-// import { JwtAuthGuard } from '@@lib/auth/guards/jwt.guard';
-// import { RolesGuard } from '@@lib/auth/guards/roles.guard';
+// import { isPublic } from '@lib/auth/decorators/isPublic.decorator';
+// import { Rol } from '@lib/auth/decorators/rol.decorator';
+// import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
+// import { RolesGuard } from '@lib/auth/guards/roles.guard';
 // import { SchemaFromRol } from '@lib/core/interceptors/ClassSerializerSchema.decorators';
 // import { ClassSerializerSchemaInterceptor } from '@lib/core/interceptors/ClassSerializerSchema';
 

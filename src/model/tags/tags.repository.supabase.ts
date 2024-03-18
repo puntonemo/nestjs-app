@@ -11,8 +11,8 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { Tag, CreateTagDto, FindTagDto, UpdateTagDto } from './tag.model';
-import { User } from '@model/users/users.entity';
+import { Tag, CreateTagDto, FindTagDto, UpdateTagDto } from '.';
+import { User } from '@model/users';
 import { SupabaseService } from '@lib/database';
 
 class TagAdapter {
@@ -109,7 +109,7 @@ export class TagsRepository {
             updatedBy: user ? parseInt(user.id) : null,
             updatedAt: new Date().toISOString()
         };
-        const userRolAdapted = {
+        const adaptedTag = {
             ...this.adaptForCreate(existingTag),
             ...this.adaptForCreate(updateTag)
         };
@@ -117,7 +117,7 @@ export class TagsRepository {
         const { data, error } = await this.supabase
             .getClient()
             .from(tableName)
-            .upsert(userRolAdapted)
+            .upsert(adaptedTag)
             .select()
             .single();
 
@@ -145,7 +145,7 @@ export class TagsRepository {
     private adaptForCreate = (data: any) =>
         plainToClass(CreateTagAdapter, data);
 
-    private getInstance = (value, schemas?: string[] | string) =>
+    private getInstance = (value: any, schemas?: string[] | string) =>
         plainToInstance(
             Tag,
             value,
