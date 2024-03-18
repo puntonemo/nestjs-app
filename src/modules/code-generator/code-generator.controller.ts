@@ -15,13 +15,13 @@ export class CodeGeneratorController {
         const config = JSON.parse(form.config);
 
         if (form.files) {
-            codegen(form.files);
+            codegen(form.files, config);
         }
         return { config };
     }
 }
 
-const codegen = (fullcode: string) => {
+const codegen = (fullcode: string, config: any) => {
     const reModelPath = /\/\/\s*model_path\s*=*(.[^\r\n]*)\r*\n*/g;
     const rerModelPath = [...fullcode.matchAll(reModelPath)];
 
@@ -31,8 +31,19 @@ const codegen = (fullcode: string) => {
     const regexp = /\/\*\*\*\sbegin of\s(.[^\*]*)/g;
     const array = [...fullcode.matchAll(regexp)];
 
+    const filePath = path.join(
+        process.env.PWD || process.env.INIT_CWD,
+        fragmentPath
+    );
+
+    fs.mkdirSync(filePath, { recursive: true } as any);
+
+    const fileName = path.join(filePath, `/config.json`);
+
+    fs.writeFileSync(fileName, JSON.stringify(config, null, '\t'));
+
     for (const item of array) {
-        extractFragment(fullcode, item[1].trim(), fragmentPath);
+        extractFragment(fullcode, item[1].trim(), filePath);
     }
 };
 
@@ -49,13 +60,8 @@ const extractFragment = (
     if (endOfBlock > 0 && endOfComment > 0) {
         const codeBlock = fullcode.substring(endOfComment + 6, endOfBlock - 4);
 
-        const filePath = path.join(
-            process.env.PWD || process.env.INIT_CWD,
-            fragmentPath
-        );
-        const fileName = path.join(filePath, `/${fragmentName}`);
+        const fileName = path.join(fragmentPath, `/${fragmentName}`);
 
-        fs.mkdirSync(filePath, { recursive: true } as any);
         fs.writeFileSync(fileName, codeBlock);
     }
 };

@@ -10,9 +10,9 @@ import {
     // UseGuards
     // UseInterceptors
 } from '@nestjs/common';
-import { <%-model_name_plural%>Service } from './<%-model_name_plural_lowercase%>.service';
-import { Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '@model/<%-model_name_lowercase%>';
-import { User } from '@model/user/user.model';
+import { <%-model_name_plural%>Service } from '@model/<%-model_name_plural_lowercase%>/<%-model_name_plural_lowercase%>.service';
+import { Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '@model/<%-model_name_plural_lowercase%>';
+import { User } from '@model/user';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
 // import { isPublic } from '@lib/auth/decorators/isPublic.decorator';
 // import { Rol } from '@lib/auth/decorators/rol.decorator';
