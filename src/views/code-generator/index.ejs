@@ -23,17 +23,21 @@
                     <%} else {%>
                     <div class="col-4">
                     <%}%>
+                        <div class="mb-4 text-start">
+                            <button id="codegen" class="btn btn-primary">Generate model</button>
+                        </div>
                         <%if(!locals.config) {%>
                         <div id="config"><%-include('templates/model/model_config_template') -%></div>
                         <%} else {%>
                             <div id="config"><%-JSON.stringify(config, null, "\t")%></div>
                         <%}%>
-                        <button id="codegen">Generate model</button>
                     </div>
                     <%if(locals.config) {%>
                     <div class="col-8">
+                        <div class="mb-4 text-end">
+                            <button id="filesgen" class="btn btn-success">Generate files</button>
+                        </div>
                         <div id="editor"> <%- include('templates/model/index', {config}) -%></div>
-                        <button id="filesgen">Generate files</button>
                     </div>
                     <%}%>
                 </div>
