@@ -1,0 +1,27 @@
+import { Injectable } from '@nestjs/common';
+import { User } from '@model/users';
+import { <%-model_name_plural%>Repository, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '@model/<%-model_name_plural_lowercase%>';
+
+@Injectable()
+export class <%-model_name_plural%>AdminService {
+    constructor(private readonly <%-model_name_plural_lowercase%>Repository: <%-model_name_plural%>Repository) {}
+    create(create<%-model_name%>Dto: Create<%-model_name%>Dto, user: User) {
+        return this.<%-model_name_plural_lowercase%>Repository.create(create<%-model_name%>Dto, user);
+    }
+
+    findAll(filters: Find<%-model_name%>Dto) {
+        return this.<%-model_name_plural_lowercase%>Repository.findAll(filters);
+    }
+
+    findOne(id: number) {
+        return this.<%-model_name_plural_lowercase%>Repository.findOne(id);
+    }
+
+    update(id: number, update<%-model_name%>Dto: Update<%-model_name%>Dto, user: User) {
+        return this.<%-model_name_plural_lowercase%>Repository.update(id, update<%-model_name%>Dto, user);
+    }
+
+    remove(id: number) {
+        return this.<%-model_name_plural_lowercase%>Repository.remove(id);
+    }
+}

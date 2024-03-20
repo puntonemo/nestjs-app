@@ -11,10 +11,8 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { <%-model_name%> } from './<%-model_name.toLowerCase()%>.model';
-import { Create<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.create';
-import { Update<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.dto.update';
-import { User } from '@model/user/user.model';
+import { <%-model_name%>, Create<%-model_name%>Dto, Update<%-model_name%>Dto } from '.';
+import { User } from '@model/users';
 
 class <%-model_name%>Adapter {<%
     if(repository.adapter) {
@@ -63,19 +61,19 @@ class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
 }
 
 @Injectable()
-export class <%-model_name%>sRepository {
-    private <%-model_name.toLowerCase()%>s: Record&#60;string, any&#62; = [];
+export class <%-model_name_plural%>Repository {
+    private <%-model_name_plural_lowercase%>: Record&#60;string, any&#62; = [];
     async findOne(
         id: number,
         schemas?: string | string[]
     ): Promise&#60;<%-model_name%> | undefined&#62; {
         return this.getInstance(
-            this.adapt(this.<%-model_name.toLowerCase()%>s.find((item) => item.id === id)),
+            this.adapt(this.<%-model_name_plural_lowercase%>.find((item) => item.id === id)),
             schemas
         );
     }
     async findAll(schemas?: string | string[]) {
-        return this.getInstance(this.adapt(this.<%-model_name.toLowerCase()%>s), schemas);
+        return this.getInstance(this.adapt(this.<%-model_name_plural_lowercase%>), schemas);
     }
     async create(
         create<%-model_name%>Dto: Create<%-model_name%>Dto,
@@ -85,14 +83,14 @@ export class <%-model_name%>sRepository {
         const new<%-model_name%> = this.getInstance(
             this.adapt({
                 ...create<%-model_name%>Dto,
-                id: Object.entries(this.<%-model_name.toLowerCase()%>s).length + 1,
+                id: Object.entries(this.<%-model_name_plural_lowercase%>).length + 1,
                 createdAt: new Date(),
                 createdBy: user?.id
             }),
             schemas
         );
 
-        this.<%-model_name.toLowerCase()%>s.push(this.adaptForCreate(new<%-model_name%>));
+        this.<%-model_name_plural_lowercase%>.push(this.adaptForCreate(new<%-model_name%>));
 
         return new<%-model_name%>;
     }
@@ -102,27 +100,27 @@ export class <%-model_name%>sRepository {
         user?: User,
         schemas: string | string[] = ['admin']
     ) {
-        const index = Object.entries(this.<%-model_name.toLowerCase()%>s).findIndex(
+        const index = Object.entries(this.<%-model_name_plural_lowercase%>).findIndex(
             (i: any) => parseInt(i[1].id) === id
         );
         if (index >= 0) {
             const updated<%-model_name%> = {
-                ...this.adapt(this.<%-model_name.toLowerCase()%>s[index]),
+                ...this.adapt(this.<%-model_name_plural_lowercase%>[index]),
                 ...update<%-model_name%>Dto,
                 updatedAt: new Date(),
                 updatedBy: user?.id
             };
-            this.<%-model_name.toLowerCase()%>s[index] = this.adaptForCreate(updated<%-model_name%>);
+            this.<%-model_name_plural_lowercase%>[index] = this.adaptForCreate(updated<%-model_name%>);
 
             return this.getInstance(updated<%-model_name%>, schemas);
         }
     }
     async remove(id: number) {
-        const index = Object.entries(this.<%-model_name.toLowerCase()%>s).findIndex(
+        const index = Object.entries(this.<%-model_name_plural_lowercase%>).findIndex(
             (i: any) => i[1].id === id
         );
         if (index >= 0) {
-            this.<%-model_name.toLowerCase()%>s.splice(index, 1);
+            this.<%-model_name_plural_lowercase%>.splice(index, 1);
         }
         return { status: 'ok' };
     }

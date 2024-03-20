@@ -16,7 +16,7 @@ import { SignInDto } from './dto/signin.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
-import { User } from '@model/user/user.model';
+import { User } from '@model/users/users.entity';
 import { ClassSerializerSchemaInterceptor } from '@lib/interceptors/ClassSerializerSchema';
 // import { Rol } from './decorators/rol/rol.decorator';
 // import { RolesGuard } from './guards/roles.guard';

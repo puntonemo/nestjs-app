@@ -1,28 +1,56 @@
 
-/*** index.ts *****************************************************/
-<%-include('files/index', config) -%>
+<%
+    let model_name_lowercase = config.model_name_lowercase ? config.model_name_lowercase.toLowerCase() : config.model_name.toLowerCase();
+    let model_name_plural = config.model_name_plural ?  config.model_name_plural : config.model_name + 's';
+    let model_name_plural_lowercase = config.model_name_plural_lowercase ?  config.model_name_plural_lowercase.toLowerCase() : model_name_lowercase + 's';
+    config.model_name_lowercase = model_name_lowercase;
+    config.model_name_plural = model_name_plural;
+    config.model_name_plural_lowercase = model_name_plural_lowercase;
+%>
+// model_name = <%=config.model_name%>
+// model_name_lowercase = <%=model_name_lowercase%>
+// model_name_plural = <%=model_name_plural%>
+// model_name_plural_lowercase = <%=model_name_plural_lowercase%>
+// model_path = /src/model/<%=model_name_plural_lowercase%>
 
-/*** <%-config.model_name.toLowerCase()%>.entity.ts *****************************************************/
+/*** begin of index.ts ****************************************************/
+<%-include('files/index', config) -%>
+//end of index.ts
+
+/*** begin of <%-config.model_name_plural_lowercase%>.entity.ts *****************************************************/
 <%-include('files/entity', config) -%>
 <%if(config.repository){
     const repositoryTemplate = 'files/repository_' + config.repository.template; %>
-/*** <%-config.model_name.toLowerCase()%>.repository.<%-config.repository.template%>.ts *****************************************************/
+//end of <%-config.model_name_plural_lowercase%>.entity.ts
+
+/*** begin of <%-config.model_name_plural_lowercase%>.repository.<%-config.repository.template%>.ts *****************************************************/
 <%-include(repositoryTemplate, config) -%><%}%>
+//end of <%-config.model_name_plural_lowercase%>.repository.<%-config.repository.template%>.ts
 <%if(config.dto){%>
-/*** <%-config.model_name.toLowerCase()%>.dto.create.ts *****************************************************/
+/*** begin of <%-config.model_name_plural_lowercase%>.dto.create.ts *****************************************************/
 <%-include('files/dto_create', config) -%>
+//end of <%-config.model_name_plural_lowercase%>.dto.create.ts
 
-/*** <%-config.model_name.toLowerCase()%>.dto.find.ts *****************************************************/
+/*** begin of <%-config.model_name_plural_lowercase%>.dto.find.ts *****************************************************/
 <%-include('files/dto_find', config) -%>
+//end of <%-config.model_name_plural_lowercase%>.dto.find.ts
 
-/*** <%-config.model_name.toLowerCase()%>.dto.update.ts *****************************************************/
+/*** begin of <%-config.model_name_plural_lowercase%>.dto.update.ts *****************************************************/
 <%-include('files/dto_update', config) -%>
+//end of <%-config.model_name_plural_lowercase%>.dto.update.ts
+<%}
+if(config.generate_module){%>
+/*** begin of <%-model_name_plural_lowercase%>.module.ts *****************************************************/
+<%-include('files/module', config) -%>
+//end of <%-model_name_plural_lowercase%>.module.ts
 <%}
 if(config.generate_controller){%>
-/*** <%-config.model_name.toLowerCase()%>s.controller.ts *****************************************************/
-<%-include('files/controller', config) -%>
+/*** begin of <%-model_name_plural_lowercase%>.admin.controller.ts *****************************************************/
+<%-include('files/admin_controller', config) -%>
+//end of <%-model_name_plural_lowercase%>.admin.controller.ts
 <%}
 if(config.generate_service){%>
-/*** <%-config.model_name.toLowerCase()%>s.service.ts *****************************************************/
-<%-include('files/service', config) -%>    
+/*** begin of <%-model_name_plural_lowercase%>.admin.service.ts *****************************************************/
+<%-include('files/admin_service', config) -%>
+//end of <%-model_name_plural_lowercase%>.admin.service.ts
 <%}%>

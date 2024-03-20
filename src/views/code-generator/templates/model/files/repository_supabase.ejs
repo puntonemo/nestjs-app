@@ -11,9 +11,9 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { <%-model_name%>, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from './<%-model_name.toLowerCase()%>.model';
-import { User } from '@model/user/user.model';
-import { SupabaseService } from '@lib/supabase';
+import { <%-model_name%>, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '.';
+import { User } from '@model/users';
+import { SupabaseService } from '@lib/database';
 
 class <%-model_name%>Adapter {<%
     if(repository.adapter) {
@@ -61,11 +61,11 @@ class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
     }%>
 }
 
-const tableName = '<%-model_name.toLowerCase()%>s';
+const tableName = '<%-model_name_plural_lowercase%>';
 const pkColumn = 'id';
 
 @Injectable()
-export class <%-model_name%>sRepository {
+export class <%-model_name_plural%>Repository {
     constructor(private readonly supabase: SupabaseService) {}
     async create(create<%-model_name%>Dto: Create<%-model_name%>Dto, user?: User) {
         const new<%-model_name%> = {
