@@ -12,7 +12,7 @@ import {
     plainToInstance
 } from 'class-transformer';
 import { <%-model_name%>, Create<%-model_name%>Dto, Update<%-model_name%>Dto } from '.';
-import { User } from '@model/user';
+import { User } from '@model/users';
 
 class <%-model_name%>Adapter {<%
     if(repository.adapter) {

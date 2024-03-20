@@ -45,12 +45,12 @@ if(config.generate_module){%>
 //end of <%-model_name_plural_lowercase%>.module.ts
 <%}
 if(config.generate_controller){%>
-/*** begin of <%-model_name_plural_lowercase%>.controller.ts *****************************************************/
-<%-include('files/controller', config) -%>
-//end of <%-model_name_plural_lowercase%>.controller.ts
+/*** begin of <%-model_name_plural_lowercase%>.admin.controller.ts *****************************************************/
+<%-include('files/admin_controller', config) -%>
+//end of <%-model_name_plural_lowercase%>.admin.controller.ts
 <%}
 if(config.generate_service){%>
-/*** begin of <%-model_name_plural_lowercase%>.service.ts *****************************************************/
-<%-include('files/service', config) -%>
-//end of <%-model_name_plural_lowercase%>.service.ts
+/*** begin of <%-model_name_plural_lowercase%>.admin.service.ts *****************************************************/
+<%-include('files/admin_service', config) -%>
+//end of <%-model_name_plural_lowercase%>.admin.service.ts
 <%}%>
