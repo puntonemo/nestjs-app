@@ -71,6 +71,9 @@ dependencies:
   passport-jwt:
     specifier: ^4.0.1
     version: 4.0.1
+  passport-windowslive:
+    specifier: ^1.0.2
+    version: 1.0.2
   reflect-metadata:
     specifier: ^0.2.0
     version: 0.2.1
@@ -4707,6 +4710,13 @@ packages:
   /passport-strategy@1.0.0:
     resolution: {integrity: sha512-CB97UUvDKJde2V0KDWWB3lyf6PC3FaZP7YxZ2G8OAtn9p4HI9j9JLP9qjOGZFvyl8uwNT8qM+hGnz/n16NI7oA==}
     engines: {node: '>= 0.4.0'}
+    dev: false
+
+  /passport-windowslive@1.0.2:
+    resolution: {integrity: sha512-9qW4K6IOI26SWGAmTABN2mZLeT8/7rS48ES81ZTHo80Ne/CJmB22kNIfoz5DrdKk/FJLhVqASDNrH/dI8QNffA==}
+    engines: {node: '>= 0.4.0'}
+    dependencies:
+      passport-oauth2: 1.8.0
     dev: false
 
   /passport@0.7.0:
