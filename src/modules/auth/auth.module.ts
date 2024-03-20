@@ -7,6 +7,10 @@ import { UsersRepository } from '@model/users';
 import { UserRolesRepository } from '@model/user-roles';
 import { DatabaseModule } from '@lib/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GoogleController } from './google/google.controller';
+import { GoogleService } from './google/google.service';
+import { GoogleStrategy } from '@lib/auth/strategy/google.strategy';
+
 @Module({
     imports: [
         DatabaseModule,
@@ -23,7 +27,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
             }
         })
     ],
-    controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, UsersRepository, UserRolesRepository]
+    controllers: [AuthController, GoogleController],
+    providers: [
+        AuthService,
+        GoogleService,
+        JwtStrategy,
+        GoogleStrategy,
+        UsersRepository,
+        UserRolesRepository
+    ]
 })
 export class AuthModule {}
