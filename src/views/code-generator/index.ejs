@@ -5,10 +5,10 @@
         <%- include('_header') -%>
         <style type="text/css" media="screen">
             #editor { 
-                height: 50vh;
+                height: calc(100vh - 150px);
             }
             #config { 
-                height: 50vh;
+                height: calc(100vh - 150px);
             }
         </style>
     </head>
@@ -16,12 +16,12 @@
         <%- include('_nav') -%>
         <!-- Page content-->
         <div class="container">
-            <div class="text-center mt-5">
+            <div class="text-center mt-3">
                 <div class="row">
                     <%if(!locals.config) {%>
-                    <div class="col-12">
+                    <div class="col-12 p-0">
                     <%} else {%>
-                    <div class="col-4">
+                    <div class="col-4 p-0">
                     <%}%>
                         <div class="mb-4 text-start">
                             <button id="codegen" class="btn btn-primary">Generate model</button>
@@ -33,7 +33,7 @@
                         <%}%>
                     </div>
                     <%if(locals.config) {%>
-                    <div class="col-8">
+                    <div class="col-8 ps-2">
                         <div class="mb-4 text-end">
                             <button id="filesgen" class="btn btn-success">Generate files</button>
                         </div>
