@@ -1,17 +1,17 @@
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { LiveService } from './live.service';
+import { MicrosoftService } from './microsoft.service';
 import { AuthGuard } from '@nestjs/passport';
 
-@Controller('auth/live')
-export class LiveController {
-    constructor(private readonly liveService: LiveService) {}
+@Controller('auth/microsoft')
+export class MicrosoftController {
+    constructor(private readonly liveService: MicrosoftService) {}
 
     @Get()
-    @UseGuards(AuthGuard('windowslive'))
+    @UseGuards(AuthGuard('microsoft'))
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async googleAuth(@Req() req) {}
     @Get('redirect')
-    @UseGuards(AuthGuard('windowslive'))
+    @UseGuards(AuthGuard('microsoft'))
     liveAuthRedirect(@Req() req) {
         return this.liveService.liveLogin(req);
     }

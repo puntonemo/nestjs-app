@@ -1,16 +1,16 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-windowslive';
+import { Strategy, VerifyCallback } from 'passport-microsoft';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class LiveStrategy extends PassportStrategy(Strategy, 'windowslive') {
+export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
     constructor(private readonly config: ConfigService) {
         super({
-            clientID: config.get('LIVE_CLIENT_ID'),
-            clientSecret: config.get('LIVE_CLIENT_SECRET'),
-            callbackURL: config.get('LIVE_CALLBACK_URL'),
-            scope: ['wl.signin', 'wl.basic', 'wl.emails'] // ['openid', 'profile', 'email', 'User.Read'] //['wl.signin', 'wl.basic']
+            clientID: config.get('MICROSOFT_CLIENT_ID'),
+            clientSecret: config.get('MICROSOFT_CLIENT_SECRET'),
+            callbackURL: config.get('MICROSOFT_CALLBACK_URL'),
+            scope: ['openid', 'profile', 'email', 'User.Read']
         });
     }
 
@@ -22,10 +22,10 @@ export class LiveStrategy extends PassportStrategy(Strategy, 'windowslive') {
     ): Promise<any> {
         const { name, emails, photos } = profile;
         const user = {
-            email: emails[0].value,
+            email: emails?.length > 0 ? emails[0]?.value : undefined,
             firstName: name.givenName,
             lastName: name.familyName,
-            picture: photos[0].value,
+            picture: photos?.length > 0 ? photos[0].value : undefined,
             accessToken
         };
         done(null, user);
