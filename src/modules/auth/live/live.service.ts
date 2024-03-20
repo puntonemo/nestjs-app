@@ -28,7 +28,7 @@ export class LiveService {
         const token = this.jwtService.sign(payload);
 
         return {
-            message: 'User information from google',
+            message: 'User information from Microsoft Live',
             user: req.user,
             token
         };

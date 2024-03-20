@@ -10,6 +10,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GoogleController } from './google/google.controller';
 import { GoogleService } from './google/google.service';
 import { GoogleStrategy } from '@lib/auth/strategy/google.strategy';
+import { LiveController } from './live/live.controller';
+import { LiveService } from './live/live.service';
+import { LiveStrategy } from '@lib/auth/strategy/live.strategy';
 
 @Module({
     imports: [
@@ -27,12 +30,14 @@ import { GoogleStrategy } from '@lib/auth/strategy/google.strategy';
             }
         })
     ],
-    controllers: [AuthController, GoogleController],
+    controllers: [AuthController, GoogleController, LiveController],
     providers: [
         AuthService,
         GoogleService,
+        LiveService,
         JwtStrategy,
         GoogleStrategy,
+        LiveStrategy,
         UsersRepository,
         UserRolesRepository
     ]

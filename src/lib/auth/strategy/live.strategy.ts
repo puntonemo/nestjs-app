@@ -4,13 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy, 'windowslive') {
+export class LiveStrategy extends PassportStrategy(Strategy, 'windowslive') {
     constructor(private readonly config: ConfigService) {
         super({
             clientID: config.get('LIVE_CLIENT_ID'),
             clientSecret: config.get('LIVE_CLIENT_SECRET'),
             callbackURL: config.get('LIVE_CALLBACK_URL'),
-            scope: ['wl.signin', 'wl.basic']
+            scope: ['wl.signin', 'wl.basic', 'wl.emails'] // ['openid', 'profile', 'email', 'User.Read'] //['wl.signin', 'wl.basic']
         });
     }
 
