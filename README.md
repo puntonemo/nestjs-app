@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-$ pnpm i --save class-validator class-transformer @nestjs/swagger swagger-ui-express @nestjs/config @nestjs/serve-static bcryptjs @nestjs/jwt @nestjs/passport passport passport-jwt passport-google-oauth20 @nestjs/event-emitter ejs @nestjs/cache-manager cache-manager @nestjs/websockets @nestjs/platform-socket.io @nestjs/microservices
+$ pnpm i --save class-validator class-transformer @nestjs/swagger swagger-ui-express @nestjs/config @nestjs/serve-static bcryptjs @nestjs/jwt @nestjs/passport passport passport-jwt passport-google-oauth20 passport-microsoft @nestjs/event-emitter ejs @nestjs/cache-manager cache-manager @nestjs/websockets @nestjs/platform-socket.io @nestjs/microservices
 ```
 
 ## Running the app
