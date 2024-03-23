@@ -9,7 +9,7 @@ import {
     UseGuards,
     Query
 } from '@nestjs/common';
-import { UserRolesService } from './user-roles.service';
+import { UserRolesService } from './user-roles.admin.service';
 import {
     FindUserRolDto,
     CreateUserRolDto,
@@ -39,7 +39,7 @@ export class UserRolesController {
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.userRolesService.findOne(+id);
+        return this.userRolesService.findOne(id);
     }
 
     @Patch(':id')
@@ -48,11 +48,11 @@ export class UserRolesController {
         @Body() updateUserRolDto: UpdateUserRolDto,
         @AuthUser() user: User
     ) {
-        return this.userRolesService.update(+id, updateUserRolDto, user);
+        return this.userRolesService.update(id, updateUserRolDto, user);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.userRolesService.remove(+id);
+        return this.userRolesService.remove(id);
     }
 }

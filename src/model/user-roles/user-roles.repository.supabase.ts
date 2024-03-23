@@ -106,14 +106,14 @@ export class UserRolesRepository {
 
         return UserRol.instance(this.adapt(data[0]), 'admin');
     }
-    async findOne(id: number) {
+    async findOne(id: string) {
         const { data } = await this.findAll({ id } as FindUserRolDto);
 
         if (!data || (data as any[]).length < 1) throw new NotFoundException();
 
         return UserRol.instance(this.adapt(data[0]), 'admin');
     }
-    async update(id: number, updateUserRolDto: UpdateUserRolDto, user?: User) {
+    async update(id: string, updateUserRolDto: UpdateUserRolDto, user?: User) {
         const existingUserRol = await this.findOne(id);
 
         if (!existingUserRol) throw new NotFoundException();
@@ -139,12 +139,12 @@ export class UserRolesRepository {
 
         return UserRol.instance(this.adapt(data), 'admin');
     }
-    async remove(id: number) {
+    async remove(id: string) {
         const { error } = await this.supabase
             .getClient()
             .from(tableName)
             .delete()
-            .eq(pkColumn, id);
+            .eq(pkColumn, parseInt(id));
 
         if (error) throw new InternalServerErrorException(error);
 

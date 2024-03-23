@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from '@model/users/users.service';
-import { UsersController } from '@model/users/users.controller';
+import { UsersService } from '@model/users/users.admin.service';
+import { UsersController } from '@model/users/users.admin.controller';
 import { UsersRepository } from '@model/users';
 import { SupabaseService } from '@lib/database';
 

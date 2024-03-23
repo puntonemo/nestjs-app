@@ -1,11 +1,10 @@
 import { Transform } from 'class-transformer';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsNumber, IsString, IsOptional } from 'class-validator';
 
 export class FindUserRolDto {
     @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    id: number;
+    @IsString()
+    id: string;
     @IsOptional()
     code: string;
     @IsOptional()
