@@ -1,0 +1,200 @@
+import {
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from '@nestjs/common';
+import {
+    Exclude,
+    Expose,
+    Type,
+    instanceToPlain,
+    plainToClass,
+    plainToInstance
+} from 'class-transformer';
+import { <%-model_name%>, Create<%-model_name%>Dto, Find<%-model_name%>Dto, Update<%-model_name%>Dto } from '.';
+import { User } from '@model/users';
+import { MongoDBService } from '@lib/database';
+import { ObjectId } from 'mongodb';
+
+class <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+        for (const adaptItem of repository.adapter) {
+            if (!adaptItem.exclude) {
+            let adapItemConvertType = undefined;
+            let adapItemType = attributes.find(i=>i.name==adaptItem.name).type
+        
+            if (adaptItem.type){
+                adapItemType = adaptItem.type;
+                switch(adaptItem.type){
+                    case 'string':
+                        adapItemConvertType = 'String';
+                        break;
+                    case 'number':
+                        adapItemConvertType = 'Number';
+                        break;
+                    case 'boolean':
+                        adapItemConvertType = 'Boolean';
+                        break;
+                    case 'Date':
+                        adapItemConvertType = 'Date';
+                        break;
+                }
+            }
+            if (adapItemConvertType) {%>
+    @Type(() => <%-adapItemConvertType%>)<%}
+            if (adaptItem.alias) {%>
+    @Expose({ toPlainOnly: true, name: '<%-adaptItem.name%>' })<%}%>
+    <%-adaptItem.alias || adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+    //* MONGODB REPOSITORY
+    @Type(() => String)
+    @Expose({ toPlainOnly: true, name: 'id' })
+    _id?: any;
+}
+@Expose({ toClassOnly: true })
+class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
+    if(repository.adapter) {
+    for (const adaptItem of repository.adapter) {
+            if (adaptItem.exclude) {
+                let adapItemType = attributes.find(i=>i.name==adaptItem.name).type%>
+    @Exclude()
+    <%-adaptItem.name%>?: <%-adapItemType%>;<%
+            }
+        }
+    }%>
+    //* MONGODB REPOSITORY
+    @Exclude()
+    id?: any;
+}
+const tableName = '<%-model_name_plural_lowercase%>';
+
+@Injectable()
+export class <%-model_name_plural%>Repository {
+    constructor(private readonly mongoDBService: MongoDBService) {}
+    async create(create<%-model_name%>Dto: Create<%-model_name%>Dto, user?: User) {
+        const database = await this.mongoDBService.getDefaultDatabase();
+        const new<%-model_name%> = {
+            ...create<%-model_name%>Dto,
+            createdBy: user?.id,
+            createdAt: new Date().toISOString()
+        };
+
+        const new<%-model_name%>Adated = this.adaptForCreate(new<%-model_name%>);
+
+        try {
+            const data = await database
+                .collection(tableName)
+                .insertOne(new<%-model_name%>Adated);
+
+            new<%-model_name%>Adated._id = data.insertedId;
+
+            return this.getInstance(this.adapt(new<%-model_name%>Adated), 'admin');
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+    async findAll(filters?: Find<%-model_name%>Dto) {
+        const database = await this.mongoDBService.getDefaultDatabase();
+        // const page = filters?.page ?? 1;
+        const pageSize = filters?.pageSize ?? 10;
+
+        const pipeline = [];
+
+        if (filters?.id)
+            pipeline.push({ $match: { _id: new ObjectId(filters.id) } });
+
+        if (filters?.description)
+            pipeline.push({
+                $match: { description: new RegExp(filters.description, 'i') }
+            });
+
+        if (filters?.title)
+            pipeline.push({
+                $match: { title: new RegExp(filters.title, 'i') }
+            });
+
+        if (filters?.order)
+            pipeline['$sort'][filters?.order] = filters.ascending ? 1 : -1;
+
+        pipeline.push({ $limit: pageSize });
+        const data = await database
+            .collection(tableName)
+            .aggregate(pipeline)
+            .toArray();
+
+        return {
+            data: this.getInstance(this.adapt(data), 'admin') ?? []
+            //count: count ?? undefined
+        };
+    }
+    async findOne(id: string) {
+        const { data } = await this.findAll({ id } as Find<%-model_name%>Dto);
+
+        if (!data || (data as any[]).length < 1) throw new NotFoundException();
+
+        return this.getInstance(this.adapt(data[0]), 'admin');
+    }
+    async update(id: string, update<%-model_name%>Dto: Update<%-model_name%>Dto, user?: User) {
+        const database = await this.mongoDBService.getDefaultDatabase();
+        const existing<%-model_name%> = await this.findOne(id);
+
+        if (!existing<%-model_name%>) throw new NotFoundException();
+
+        const update<%-model_name%> = {
+            ...update<%-model_name%>Dto,
+            updatedBy: user ? parseInt(user.id) : null,
+            updatedAt: new Date().toISOString()
+        };
+
+        const adapted<%-model_name%> = {
+            ...this.adaptForCreate(existing<%-model_name%>),
+            ...this.adaptForCreate(update<%-model_name%>)
+        };
+
+        try {
+            await database
+                .collection(tableName)
+                .updateOne({ _id: new ObjectId(id) }, { $set: adapted<%-model_name%> });
+
+            adapted<%-model_name%>.id = id;
+
+            return this.getInstance(this.adapt(adapted<%-model_name%>), 'admin');
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+    async remove(id: string) {
+        const database = await this.mongoDBService.getDefaultDatabase();
+        try {
+            await database
+                .collection(tableName)
+                .deleteOne({ _id: new ObjectId(id) });
+            return { status: 'ok' };
+        } catch (error) {
+            throw new InternalServerErrorException(error);
+        }
+    }
+    //*******************************************************************/
+    //*  G E N E R I C   R E P O S I T O R Y
+    //*
+    private adapt = (data: any) =>
+        instanceToPlain(plainToInstance(<%-model_name%>Adapter, data));
+
+    private adaptForCreate = (data: any) =>
+        plainToClass(Create<%-model_name%>Adapter, data);
+
+    private getInstance = (value: any, schemas?: string[] | string) =>
+        plainToInstance(
+            <%-model_name%>,
+            value,
+            schemas
+                ? {
+                      groups: typeof schemas == 'string' ? [schemas] : schemas
+                  }
+                : undefined
+        );
+    //*
+    //*********************************************************************/
+}

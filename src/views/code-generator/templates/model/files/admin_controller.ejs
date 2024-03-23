@@ -40,7 +40,7 @@ export class <%-model_name_plural%>AdminController {
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.<%-model_name_plural_lowercase%>AdminService.findOne(+id);
+        return this.<%-model_name_plural_lowercase%>AdminService.findOne(id);
     }
 
     @Patch(':id')
@@ -49,11 +49,11 @@ export class <%-model_name_plural%>AdminController {
         @Body() update<%-model_name%>Dto: Update<%-model_name%>Dto,
         @AuthUser() user: User
     ) {
-        return this.<%-model_name_plural_lowercase%>AdminService.update(+id, update<%-model_name%>Dto, user);
+        return this.<%-model_name_plural_lowercase%>AdminService.update(id, update<%-model_name%>Dto, user);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.<%-model_name_plural_lowercase%>AdminService.remove(+id);
+        return this.<%-model_name_plural_lowercase%>AdminService.remove(id);
     }
 }
