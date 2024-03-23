@@ -125,7 +125,7 @@ export class UsersRepository {
             query.eq('partner_id', filters.partnerId);
         }
         if (filters?.id) {
-            query.eq('id', filters.id);
+            query.eq('id', parseInt(filters.id));
         }
         if (filters?.email) {
             query.eq('email', filters.email);
@@ -141,14 +141,14 @@ export class UsersRepository {
             count: count ?? undefined
         };
     }
-    async findOne(id: number, schema = 'admin') {
+    async findOne(id: string, schema = 'admin') {
         const { data } = await this.findAll({ id } as FindUserDto);
 
         if (!data || (data as any[]).length < 1) throw new NotFoundException();
 
         return this.getInstance(this.adapt(data[0]), schema);
     }
-    async update(id: number, updateUserDto: UpdateUserDto, user?: User) {
+    async update(id: string, updateUserDto: UpdateUserDto, user?: User) {
         const existingUser = await this.findOne(id);
 
         if (!existingUser) throw new NotFoundException();
@@ -174,12 +174,12 @@ export class UsersRepository {
 
         return this.getInstance(this.adapt(data), 'admin');
     }
-    async remove(id: number) {
+    async remove(id: string) {
         const { error } = await this.supabase
             .getClient()
             .from(tableName)
             .delete()
-            .eq(pkColumn, id);
+            .eq(pkColumn, parseInt(id));
 
         if (error) throw new InternalServerErrorException(error);
 

@@ -34,7 +34,7 @@ export class UsersController {
 
     @Get(':id')
     findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id);
+        return this.usersService.findOne(id);
     }
 
     @Patch(':id')
@@ -43,11 +43,11 @@ export class UsersController {
         @Body() updateUserDto: UpdateUserDto,
         @AuthUser() user: User
     ) {
-        return this.usersService.update(+id, updateUserDto, user);
+        return this.usersService.update(id, updateUserDto, user);
     }
 
     @Delete(':id')
     remove(@Param('id') id: string) {
-        return this.usersService.remove(+id);
+        return this.usersService.remove(id);
     }
 }

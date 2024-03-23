@@ -18,15 +18,15 @@ export class UsersService {
         return this.usersRepository.findAll(filters);
     }
 
-    findOne(id: number) {
+    findOne(id: string) {
         return this.usersRepository.findOne(id);
     }
 
-    update(id: number, updateUserDto: UpdateUserDto, user?: User) {
+    update(id: string, updateUserDto: UpdateUserDto, user?: User) {
         return this.usersRepository.update(id, updateUserDto, user);
     }
 
-    remove(id: number) {
+    remove(id: string) {
         return this.usersRepository.remove(id);
     }
 }

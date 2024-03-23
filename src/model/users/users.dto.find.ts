@@ -3,9 +3,7 @@ import { IsEmail, IsNumber, IsOptional } from 'class-validator';
 
 export class FindUserDto {
     @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    id: number;
+    id: string;
     @IsOptional()
     @IsEmail()
     email: string;

@@ -11,51 +11,55 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { UserRol, CreateUserRolDto, FindUserRolDto, UpdateUserRolDto } from '.';
-import { User } from '@model/users';
+import { User, CreateUserDto, FindUserDto, UpdateUserDto } from '.';
 import { MongoDBService } from '@lib/database';
 import { ObjectId } from 'mongodb';
 
-class UserRolAdapter {
+class UserAdapter {
     //* MONGODB REPOSITORY
     @Type(() => String)
     @Expose({ toPlainOnly: true, name: 'id' })
     _id?: any;
 }
 @Expose({ toClassOnly: true })
-class CreateUserRolAdapter extends UserRolAdapter {
+class CreateUserAdapter extends UserAdapter {
     //* MONGODB REPOSITORY
     @Exclude()
     id?: any;
 }
-const tableName = 'user-roles';
+const tableName = 'users';
 
 @Injectable()
-export class UserRolesRepository {
+export class UsersRepository {
     constructor(private readonly mongoDBService: MongoDBService) {}
-    async create(createUserRolDto: CreateUserRolDto, user?: User) {
+    async create(createUserDto: CreateUserDto, user?: User) {
         const database = await this.mongoDBService.getDefaultDatabase();
-        const newUserRol = {
-            ...createUserRolDto,
+        const newUser = {
+            ...createUserDto,
+            username: createUserDto.email,
+            password: User.hashPasword(
+                createUserDto.email,
+                createUserDto.password
+            ),
             createdBy: user?.id,
             createdAt: new Date().toISOString()
         };
 
-        const newUserRolAdated = this.adaptForCreate(newUserRol);
+        const newUserAdated = this.adaptForCreate(newUser);
 
         try {
             const data = await database
                 .collection(tableName)
-                .insertOne(newUserRolAdated);
+                .insertOne(newUserAdated);
 
-            newUserRolAdated._id = data.insertedId;
+            newUserAdated._id = data.insertedId;
 
-            return this.getInstance(this.adapt(newUserRolAdated), 'admin');
+            return this.getInstance(this.adapt(newUserAdated), 'admin');
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
     }
-    async findAll(filters?: FindUserRolDto) {
+    async findAll(filters?: FindUserDto, schema = 'admin') {
         const database = await this.mongoDBService.getDefaultDatabase();
         // const page = filters?.page ?? 1;
         const pageSize = filters?.pageSize ?? 10;
@@ -64,6 +68,11 @@ export class UserRolesRepository {
 
         if (filters?.id)
             pipeline.push({ $match: { _id: new ObjectId(filters.id) } });
+
+        if (filters?.partnerId)
+            pipeline.push({ $match: { partnerId: filters.partnerId } });
+
+        if (filters?.email) pipeline.push({ $match: { email: filters.email } });
 
         if (filters?.order)
             pipeline['$sort'][filters?.order] = filters.ascending ? 1 : -1;
@@ -75,49 +84,49 @@ export class UserRolesRepository {
             .toArray();
 
         return {
-            data: this.getInstance(this.adapt(data), 'admin') ?? []
+            data: this.getInstance(this.adapt(data), schema) ?? []
             //count: count ?? undefined
         };
     }
-    async findByCode(code: string) {
-        const { data } = await this.findAll({ code } as FindUserRolDto);
-
-        if (!data || (data as any[]).length < 1) throw new NotFoundException();
-
-        return UserRol.instance(this.adapt(data[0]), 'admin');
-    }
     async findOne(id: string) {
-        const { data } = await this.findAll({ id } as FindUserRolDto);
+        const { data } = await this.findAll({ id } as FindUserDto);
 
         if (!data || (data as any[]).length < 1) throw new NotFoundException();
 
         return this.getInstance(this.adapt(data[0]), 'admin');
     }
-    async update(id: string, updateUserRolDto: UpdateUserRolDto, user?: User) {
+    async findByEmail(email: string, schema = 'admin') {
+        const { data } = await this.findAll({ email } as FindUserDto, schema);
+
+        if (!data || (data as any[]).length < 1) throw new NotFoundException();
+
+        return this.getInstance(this.adapt(data[0]), schema);
+    }
+    async update(id: string, updateUserDto: UpdateUserDto, user?: User) {
         const database = await this.mongoDBService.getDefaultDatabase();
-        const existingUserRol = await this.findOne(id);
+        const existingUser = await this.findOne(id);
 
-        if (!existingUserRol) throw new NotFoundException();
+        if (!existingUser) throw new NotFoundException();
 
-        const updateUserRol = {
-            ...updateUserRolDto,
+        const updateUser = {
+            ...updateUserDto,
             updatedBy: user ? parseInt(user.id) : null,
             updatedAt: new Date().toISOString()
         };
 
-        const adaptedUserRol = {
-            ...this.adaptForCreate(existingUserRol),
-            ...this.adaptForCreate(updateUserRol)
+        const adaptedUser = {
+            ...this.adaptForCreate(existingUser),
+            ...this.adaptForCreate(updateUser)
         };
 
         try {
             await database
                 .collection(tableName)
-                .updateOne({ _id: new ObjectId(id) }, { $set: adaptedUserRol });
+                .updateOne({ _id: new ObjectId(id) }, { $set: adaptedUser });
 
-            adaptedUserRol.id = id;
+            adaptedUser.id = id;
 
-            return this.getInstance(this.adapt(adaptedUserRol), 'admin');
+            return this.getInstance(this.adapt(adaptedUser), 'admin');
         } catch (error) {
             throw new InternalServerErrorException(error);
         }
@@ -137,14 +146,14 @@ export class UserRolesRepository {
     //*  G E N E R I C   R E P O S I T O R Y
     //*
     private adapt = (data: any) =>
-        instanceToPlain(plainToInstance(UserRolAdapter, data));
+        instanceToPlain(plainToInstance(UserAdapter, data));
 
     private adaptForCreate = (data: any) =>
-        plainToClass(CreateUserRolAdapter, data);
+        plainToClass(CreateUserAdapter, data);
 
     private getInstance = (value: any, schemas?: string[] | string) =>
         plainToInstance(
-            UserRol,
+            User,
             value,
             schemas
                 ? {
