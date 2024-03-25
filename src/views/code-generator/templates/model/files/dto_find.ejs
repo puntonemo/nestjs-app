@@ -3,9 +3,7 @@ import { IsNumber, IsOptional } from 'class-validator';
 
 export class Find<%-model_name%>Dto {
     @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    id: number;
+    id: string;
     @IsOptional()
     order: string;
     @IsOptional()
@@ -18,10 +16,6 @@ export class Find<%-model_name%>Dto {
     @Transform(({ value }) => parseInt(value))
     @IsNumber()
     pageSize: number = 10;
-    @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    partnerId: number;
     @IsOptional()
     schema: string;
     @IsOptional()

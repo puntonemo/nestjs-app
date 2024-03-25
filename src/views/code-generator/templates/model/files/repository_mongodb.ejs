@@ -44,7 +44,7 @@ class <%-model_name%>Adapter {<%
     @Type(() => <%-adapItemConvertType%>)<%}
             if (adaptItem.alias) {%>
     @Expose({ toPlainOnly: true, name: '<%-adaptItem.name%>' })<%}%>
-    <%-adaptItem.alias || adaptItem.name%>?: <%-adapItemType%>;<%
+    "<%-adaptItem.alias || adaptItem.name%>"?: <%-adapItemType%>;<%
             }
         }
     }%>
@@ -105,15 +105,15 @@ export class <%-model_name_plural%>Repository {
         if (filters?.id)
             pipeline.push({ $match: { _id: new ObjectId(filters.id) } });
 
-        if (filters?.description)
-            pipeline.push({
-                $match: { description: new RegExp(filters.description, 'i') }
-            });
-
-        if (filters?.title)
-            pipeline.push({
-                $match: { title: new RegExp(filters.title, 'i') }
-            });
+//        if (filters?.description)
+//            pipeline.push({
+//                $match: { description: new RegExp(filters.description, 'i') }
+//            });
+//
+//        if (filters?.title)
+//            pipeline.push({
+//                $match: { title: new RegExp(filters.title, 'i') }
+//            });
 
         if (filters?.order)
             pipeline['$sort'][filters?.order] = filters.ascending ? 1 : -1;
