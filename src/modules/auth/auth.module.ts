@@ -7,11 +7,7 @@ import { UsersRepository } from '@model/users';
 import { UserRolesRepository } from '@model/user-roles';
 import { DatabaseModule } from '@lib/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GoogleController } from './google/google.controller';
-import { GoogleService } from './google/google.service';
 import { GoogleStrategy } from 'src/modules/auth/strategies/google.strategy';
-import { MicrosoftController } from './microsoft/microsoft.controller';
-import { MicrosoftService } from './microsoft/microsoft.service';
 import { MicrosoftStrategy } from 'src/modules/auth/strategies/microsoft.strategy';
 
 @Module({
@@ -30,11 +26,9 @@ import { MicrosoftStrategy } from 'src/modules/auth/strategies/microsoft.strateg
             }
         })
     ],
-    controllers: [AuthController, GoogleController, MicrosoftController],
+    controllers: [AuthController],
     providers: [
         AuthService,
-        GoogleService,
-        MicrosoftService,
         JwtStrategy,
         GoogleStrategy,
         MicrosoftStrategy,

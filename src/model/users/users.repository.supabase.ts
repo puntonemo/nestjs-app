@@ -11,8 +11,10 @@ import {
     InternalServerErrorException,
     NotFoundException
 } from '@nestjs/common';
-import { User, FindUserDto, CreateUserDto, UpdateUserDto } from '.';
+import { User, FindUserDto, CreateUserDto, UserDevice } from '.';
+import { UpdateUserDto } from './users.dto.update';
 import { SupabaseService } from '@lib/database';
+import { IsOptional } from 'class-validator';
 
 const tableName = 'users';
 const pkColumn = 'id';
@@ -64,24 +66,56 @@ class CreateUserAdapter extends UserAdapter {
     createdBy?: string;
 }
 
+class RepositoryUpdateUserDto extends UpdateUserDto {
+    @IsOptional()
+    credentials?: any[];
+    devices?: any[];
+}
+
 @Injectable()
 export class UsersRepository {
     constructor(private readonly supabase: SupabaseService) {}
-    async findByEmail(email: string, schema = 'admin') {
-        const { data } = await this.findAll({ email } as FindUserDto, schema);
+    async findByCredential(
+        credentialId: string,
+        schema = 'admin'
+    ): Promise<User | undefined> {
+        const query = this.supabase
+            .getClient()
+            .from(tableName)
+            .select()
+            .contains('credentials', [credentialId])
+            .maybeSingle();
 
-        if (!data || (data as any[]).length < 1) throw new NotFoundException();
+        const { data, error } = await query;
 
-        return this.getInstance(this.adapt(data[0]), schema);
+        if (error) throw new InternalServerErrorException(error);
+
+        return this.getInstance(this.adapt(data), schema);
+    }
+    async addCredential(id: number, device: UserDevice) {
+        const user = (await this.find({
+            id: id.toString(),
+            single: true
+        })) as any;
+        const credentials = user.credentials || [];
+        const devices = user.devices || [];
+
+        credentials.push(device.id);
+
+        devices.push(device);
+
+        this.update(parseInt(user.id), {
+            credentials,
+            devices
+        });
     }
     async create(createUserDto: CreateUserDto, user?: User) {
         const newUser = {
             ...createUserDto,
             username: createUserDto.email,
-            password: User.hashPasword(
-                createUserDto.email,
-                createUserDto.password
-            ),
+            password: createUserDto.password
+                ? User.hashPasword(createUserDto.email, createUserDto.password)
+                : undefined,
             createdBy: user?.id,
             createdAt: new Date().toISOString()
         };
@@ -99,15 +133,16 @@ export class UsersRepository {
 
         return this.getInstance(this.adapt(data), 'admin');
     }
-    async findAll(filters?: FindUserDto, schema = 'admin') {
-        const page = filters?.page ?? 1;
-        const pageSize = filters?.pageSize ?? 10;
-        const countOptions = filters?.count
-            ? {
-                  count: filters.count,
-                  head: filters.data ?? true ? false : true
-              }
-            : undefined;
+    async find(filters?: FindUserDto, schema = 'admin') {
+        const page = filters?.single ? 1 : filters?.page ?? 1;
+        const pageSize = filters?.single ? 1 : filters?.pageSize ?? 10;
+        const countOptions =
+            filters?.count && !filters?.single
+                ? {
+                      count: filters.count,
+                      head: filters.data ?? true ? false : true
+                  }
+                : undefined;
 
         const select = ['*'];
         const query = this.supabase
@@ -124,32 +159,45 @@ export class UsersRepository {
         if (filters?.partnerId) {
             query.eq('partner_id', filters.partnerId);
         }
+        if (filters?.googleid) {
+            query.eq('googleid', filters.googleid);
+        }
+        if (filters?.liveid) {
+            query.eq('liveid', filters.liveid);
+        }
         if (filters?.id) {
-            query.eq('id', parseInt(filters.id));
+            query.eq('id', filters.id);
         }
         if (filters?.email) {
             query.eq('email', filters.email);
         }
+
         query.range((page - 1) * pageSize, page * pageSize - 1);
 
         const { data, error, count } = await query;
 
         if (error) throw new InternalServerErrorException(error);
 
-        return {
-            data: this.getInstance(this.adapt(data), schema) ?? [],
-            count: count ?? undefined
-        };
+        if (filters.single)
+            return data.length > 0
+                ? this.getInstance(this.adapt(data[0]), schema)
+                : undefined;
+        else
+            return {
+                data: this.getInstance(this.adapt(data), schema) ?? [],
+                count: count ?? undefined
+            };
     }
-    async findOne(id: string, schema = 'admin') {
-        const { data } = await this.findAll({ id } as FindUserDto);
 
-        if (!data || (data as any[]).length < 1) throw new NotFoundException();
-
-        return this.getInstance(this.adapt(data[0]), schema);
-    }
-    async update(id: string, updateUserDto: UpdateUserDto, user?: User) {
-        const existingUser = await this.findOne(id);
+    async update(
+        id: number,
+        updateUserDto: RepositoryUpdateUserDto,
+        user?: User
+    ) {
+        const existingUser = (await this.find({
+            id: id.toString(),
+            single: true
+        })) as User;
 
         if (!existingUser) throw new NotFoundException();
 
@@ -174,12 +222,12 @@ export class UsersRepository {
 
         return this.getInstance(this.adapt(data), 'admin');
     }
-    async remove(id: string) {
+    async remove(id: number) {
         const { error } = await this.supabase
             .getClient()
             .from(tableName)
             .delete()
-            .eq(pkColumn, parseInt(id));
+            .eq(pkColumn, id);
 
         if (error) throw new InternalServerErrorException(error);
 

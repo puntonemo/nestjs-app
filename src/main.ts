@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 
 async function bootstrap() {
     const logger = new Logger('APP');
@@ -24,22 +26,30 @@ async function bootstrap() {
 
     app.setBaseViewsDir(join(__dirname, '.', 'views'));
     // app.useStaticAssets(join(__dirname, '..', 'views/static'));
-    app.use('/static', express.static(join(__dirname, '..', 'views/static')));
+    app.use('/static', express.static(join(__dirname, 'views/static')));
     app.setViewEngine('ejs');
 
     app.use(express.json({ limit: '60mb' }));
+    app.use(cookieParser());
+
+    const sessionOpts = {
+        secret: 'my-secret',
+        resave: false,
+        saveUninitialized: false
+    };
+    app.use(session(sessionOpts));
 
     app.useGlobalPipes(new ValidationPipe(validationPipeOptions));
 
     if (configService.get('SWAGGER_PATH')) {
         const dbConfig = new DocumentBuilder()
             .addBearerAuth()
-            .setTitle('Documentation')
-            .setDescription('Project Documentation')
-            .setVersion('1.0')
-            .addTag('auth')
-            .addTag('default')
-            .addTag('products')
+            .setTitle(configService.get('SWAGGER_TITLE') || 'Documentation')
+            .setDescription(
+                configService.get('SWAGGER_DESCRTIPION') ||
+                    'Project Documentation'
+            )
+            .setVersion(configService.get('SWAGGER_VERSION') || '1.0')
             .build();
 
         const document = SwaggerModule.createDocument(app, dbConfig);

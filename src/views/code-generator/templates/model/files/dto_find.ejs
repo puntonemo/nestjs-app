@@ -1,9 +1,15 @@
 import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional } from 'class-validator';
 
-export class Find<%-model_name%>Dto {
-    @IsOptional()
-    id: string;
+export class Find<%-model_name%>Dto {<%
+        if(locals?.findables){
+            for (const findable of findables) {%>
+    @IsOptional()<%if (attributes.find(i=>i.name==findable)?.type == 'number'){%>
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()<%}%>
+    <%=attributes.find(i=>i.name==findable)?.name%>: <%=attributes.find(i=>i.name==findable)?.type%>;<%
+        }
+    }%>
     @IsOptional()
     order: string;
     @IsOptional()
@@ -20,6 +26,8 @@ export class Find<%-model_name%>Dto {
     schema: string;
     @IsOptional()
     count: 'exact' | 'planned' | 'estimated';
-    @IsOptional()
-    data: boolean;
+    @Transform(({ value }) => JSON.parse(value))
+    @IsBoolean()
+    data: boolean = true;
 }
+

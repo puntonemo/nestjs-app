@@ -63,6 +63,12 @@ class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
 
 const tableName = '<%-model_name_plural_lowercase%>';
 const pkColumn = 'id';
+<%if (locals?.findables) {%>
+const dbAlias = {<%
+    for (const findable of findables) {%>
+    '<%=findable%>': '<%=repository.adapter.find(i=>i.name==findable)?.alias || findable%>',<%
+    }%>
+};<%}%>
 
 @Injectable()
 export class <%-model_name_plural%>Repository {
@@ -107,10 +113,22 @@ export class <%-model_name_plural%>Repository {
             query.order(filters.order ?? pkColumn, {
                 ascending: filters.ascending ?? true
             });
+
+    <%if(locals?.findables){
+        for (const findable of findables) {
+            if (attributes.find(i=>i.name==findable).type == 'string') {%>
+        if (filters?.<%=findable%>)
+            query.eq(dbAlias['<%=findable%>'], filters.<%=findable%>);
+        <%}else{%>
+        if (filters?.<%=findable%>)
+            query.eq(dbAlias['<%=findable%>'], filters.<%=findable%>);
+            <%}
+        }
+    } else {%>
         if (filters?.id) {
             query.eq('id', filters.id);
         }
-
+    <%}%>
         query.range((page - 1) * pageSize, page * pageSize - 1);
 
         const { data, error, count } = await query;

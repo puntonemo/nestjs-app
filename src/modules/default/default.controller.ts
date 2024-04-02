@@ -1,5 +1,8 @@
-import { Body, Controller, Get, Post, Render } from '@nestjs/common';
+import { Body, Controller, Get, Post, Render, UseGuards } from '@nestjs/common';
 import { DefaultService } from './default.service';
+import { isPublic } from '@lib/auth/decorators/isPublic.decorator';
+import { AuthUser } from '@lib/auth/decorators/user.decorator';
+import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
 
 @Controller()
 export class DefaultController {
@@ -7,8 +10,11 @@ export class DefaultController {
     @Get()
     @Post()
     @Render('default/index')
-    default(): object {
-        return { title: 'Title', subtitle: 'Subtitle' };
+    @isPublic()
+    @UseGuards(JwtAuthGuard)
+    default(@AuthUser() user): object {
+        console.log(user);
+        return { user };
     }
     @Post()
     @Render('default/index')

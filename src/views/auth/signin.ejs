@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Sign In</title>
+    <%- include('_header') -%>
+</head>
+
+<body>
+    <%- include('_nav') -%>
+        <!-- Page content-->
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 mt-5">
+                    <img src="https://preview.colorlib.com/theme/bootstrap/login-form-07/images/undraw_remotely_2j6y.svg"
+                        alt="Image" class="img-fluid">
+                </div>
+                <div class="col-md-6 contents mt-5">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="mb-4">
+                                <h3>Sign In</h3>
+                                <p class="mb-4">Lorem ipsum dolor sit amet elit. Sapiente sit aut eos consectetur
+                                    adipisicing.</p>
+                            </div>
+                            <form id="signupForm" action="#" method="post" class="needs-validation" novalidate>
+                                <div class="form-group first">
+                                    <label for="username">Username</label>
+                                    <input type="email" class="form-control" id="username" autocomplete="webauthn" required>
+                                </div>
+                                <div id="password-block" class="d-none">
+                                    <div class="form-group last mb-4">
+                                        <label for="password">Password</label>
+                                        <input type="password" class="form-control" id="password">
+                                    </div>
+                                    <div class="d-flex mb-2 align-items-center">
+                                        <label id="rememberDevice-block" class="control control--checkbox mb-0 me-2">
+                                            <span class="caption">Remember me</span>
+                                            <input type="checkbox" checked="checked" id="rememberDevice">
+                                            <div class="control__indicator"></div>
+                                        </label>
+                                        <span class="ml-auto"><a href="#" class="">Forgot Password</a></span>
+                                    </div>
+                                </div>
+                                <div id="errorBlock" class="mt-4 alert alert-warning d-flex align-items-center d-none" role="alert">
+                                    <div id="errorBlockMessage">
+                                        error message
+                                    </div>
+                                </div>
+                                <div class="d-flex mb-5 mt-3 align-items-center">
+                                    <span class="caption">Need an account?</span>
+                                    <span class="ml-auto"><a href="/auth/signup" class="ms-2">Sign Up</a></span>
+                                </div>
+                                <input type="submit" value="Log In" id="signInButton" class="btn btn-block btn-primary">
+                                <span class="d-block text-left my-4 text-muted">— or login with —</span>
+                                <div class="social-login">
+                                    <a class="btn btn-block btn-social btn-lg btn-google" href="/auth/google">
+                                        <span style="margin-top: -3px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32"
+                                                height="32" viewBox="0,0,256,256">
+                                                <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1"
+                                                    stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10"
+                                                    stroke-dasharray="" stroke-dashoffset="0" font-family="none"
+                                                    font-weight="none" font-size="none" text-anchor="none"
+                                                    style="mix-blend-mode: normal">
+                                                    <g transform="scale(10.66667,10.66667)">
+                                                        <path
+                                                            d="M12.545,10.239v3.821h5.445c-0.712,2.315 -2.647,3.972 -5.445,3.972c-3.332,0 -6.033,-2.701 -6.033,-6.032c0,-3.331 2.701,-6.032 6.033,-6.032c1.498,0 2.866,0.549 3.921,1.453l2.814,-2.814c-1.777,-1.619 -4.141,-2.607 -6.735,-2.607c-5.524,0 -10.002,4.477 -10.002,10c0,5.523 4.478,10 10.002,10c8.396,0 10.249,-7.85 9.426,-11.748z">
+                                                        </path>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                        Sign in with Google
+                                    </a>
+                                    <a class="btn btn-block btn-social btn-lg btn-microsoft mt-2" href="/auth/microsoft?state=web">
+                                        <span style="margin-top: -3px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="32"
+                                                height="32" viewBox="0 0 48 48">
+                                                <path fill="#ff5722" d="M6 6H22V22H6z" transform="rotate(-180 14 14)">
+                                                </path>
+                                                <path fill="#4caf50" d="M26 6H42V22H26z" transform="rotate(-180 34 14)">
+                                                </path>
+                                                <path fill="#ffc107" d="M26 26H42V42H26z"
+                                                    transform="rotate(-180 34 34)"></path>
+                                                <path fill="#03a9f4" d="M6 26H22V42H6z" transform="rotate(-180 14 34)">
+                                                </path>
+                                            </svg>
+                                        </span>
+                                        Sign in with Microsoft
+                                    </a>
+                                    <a href="#" class="google">
+                                        <span class="icon-google mr-3"></span>
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            //https://webauthn-conditional-ui-demo.glitch.me/index.html
+            const AUTH_CALLBACK_URI = '<%=AUTH_CALLBACK_URI%>';
+
+            function docReady(fn) {
+                // see if DOM is already available
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    // call on next available tick
+                    setTimeout(fn, 1);
+                } else {
+                    document.addEventListener("DOMContentLoaded", fn);
+                }
+            }
+            function showError(message) {
+                const errorBlock = document.getElementById('errorBlock');
+                if(message) {
+                    const errorBlockMessage = document.getElementById('errorBlockMessage');
+    
+                    errorBlock.classList.remove('d-none');
+                    errorBlockMessage.textContent = message;
+                }else{
+                    errorBlock.classList.add('d-none');
+                }
+            }
+            function callbackRedirect(responseData){
+                const url = new URL(window.location.href);
+                const newUrl = new URL(AUTH_CALLBACK_URI);
+                for (const [key, value] of url.searchParams) { 
+                    if(!key.startsWith('_')){
+                        newUrl.searchParams.append(key, value);
+                    }
+                }
+                if(responseData.token) newUrl.searchParams.append('_token', responseData.token);
+                if(responseData.signInMode) newUrl.searchParams.append('_signInMode', responseData.signInMode);
+                if(responseData.event) newUrl.searchParams.append('_event', responseData.event);
+                
+                window.location = newUrl;
+            }
+            function enablePassword(focus) {
+                document.getElementById('password-block').classList.remove('d-none');
+                document.getElementById('password').setAttribute('required', 'required');
+                if(focus) document.getElementById('password').focus();
+                if(!focus) document.getElementById('username').focus();
+            }
+            async function enableAutoFill() {
+                if(webauthAvailable()) {
+                    const data = await getChallengeCredentials();
+
+                    autoFillFormFields(data.challenge).then(async (userCredentials)=>{
+                        if(userCredentials){
+                            signinWithCredentials([userCredentials.id], data.challenge);
+                        }
+                    }).catch(error=>{
+                        enableAutoFill();
+                    });
+                }else{
+                    document.getElementById('password-block')?.classList.remove('d-none');
+                    document.getElementById('password')?.setAttribute('required', 'required');
+                    document.getElementById('rememberDevice')?.removeAttribute('checked');
+                    document.getElementById('rememberDevice-block').classList.add('d-none');
+                }
+            }
+            async function signinWithPasssword(username, password) {
+                showError();
+                const siginDto = {
+                    email: username,
+                    password
+                }
+                const rememberMe = document.getElementById('rememberDevice')?.checked ?? false;
+                fetch("/auth/user", {
+                    method: "put",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(siginDto)
+                }).then(response=>{
+                    response.json().then(async responseData=>{        
+                        if(responseData.statusCode == 401) {
+                            showError('username or password not valid');
+                            enableAutoFill();
+                            return;
+                        }
+                        if(responseData.result !== 'ok'){
+                            showError(Array.isArray(responseData.message) ? responseData.message.join(',') : responseData.message);
+                            enableAutoFill();
+                            return;
+                        }
+                        if(responseData.token){
+                            if(rememberMe) {
+                                try{
+                                    startNewRequest();
+                                    const data = await getChallengeCredentials();
+                                    const deviceRegistrationData = await registerUser(username, data.challenge);
+                                    const deviceRegistrationResponse = await verifyRegistration(deviceRegistrationData);
+                                }catch(error){
+                                    console.error(error)
+                                }finally{
+                                    console.log('continue ...');
+                                }
+                            }
+                            callbackRedirect(responseData);
+                        }
+                        return;
+                    });
+                });
+            }
+            async function signinWithCredentials(credentials, challenge) {
+                authenticateUser(credentials, challenge).then(async (deviceRegistrationData) => {
+                    showError();
+                    verifyRegistration(deviceRegistrationData).then(responseData=>{
+                        if(responseData.statusCode == 401) {
+                            showError('invalid credential');
+                            enableAutoFill();
+                            enablePassword();
+                            return;
+                        }
+                        if(responseData.result !== 'ok'){
+                            showError(Array.isArray(responseData.message) ? responseData.message.join(',') : responseData.message || 'Unexpected error');
+                            enableAutoFill();
+                            return;
+                        }
+                        callbackRedirect(responseData);
+                        return;
+
+                    });
+                }).catch(error=>{
+                    enableAutoFill();
+                    enablePassword(true);
+                })
+            }     
+            docReady(async ()=>{
+                
+                document.getElementById('username').focus();
+
+                enableAutoFill();
+
+                const signinForm = document.getElementById('signupForm');
+
+                signinForm.addEventListener('submit', async (e) => {
+                    event.preventDefault();
+                    if (abortController) {
+                        // Abort the request synchronously.
+                        // This lets us use the user activation from clicking the button on safari to trigger webauthn.
+                        abortController.abort();
+                    }
+
+                    if (!signinForm.checkValidity()) {
+                        event.stopPropagation();
+                    }
+
+                    signinForm.classList.add('was-validated');
+                    if (!signinForm.checkValidity()) return;
+
+                    const username = document.getElementById('username').value;
+                    const password = document.getElementById('password').value;
+                    
+                    const data = await getChallengeCredentials(username);
+
+                    if(data.credentials && data.credentials.length > 0 && password == '') {
+                        signinWithCredentials(data.credentials, data.challenge);
+                    }else{
+                        const passwordBlock = document.getElementById('password-block');
+                        enableAutoFill();
+                        passwordBlock.classList.remove('d-none');
+                        document.getElementById('password').focus();
+                        document.getElementById('password').setAttribute('required', 'required');
+                        if(password!=''){
+                            signinWithPasssword(username, password);
+                        }
+                    }
+                }, false);
+            })
+        </script>
+        
+        <script src="/static/js/webauth.js"></script>
+</body>
+
+</html>

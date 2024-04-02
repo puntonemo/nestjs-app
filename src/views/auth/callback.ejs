@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+    </head>
+    <body>
+        <script>
+            function docReady(fn) {
+                // see if DOM is already available
+                if (document.readyState === "complete" || document.readyState === "interactive") {
+                    // call on next available tick
+                    setTimeout(fn, 1);
+                } else {
+                    document.addEventListener("DOMContentLoaded", fn);
+                }
+            }
+            docReady(()=>{
+                const url = new URL(window.location.href);
+                const token =  url.searchParams.get('_token')
+                if(token)
+                    document.cookie = `token=${token}; path=/`;
+
+                const newUrlBase = 'http://localhost:4000';
+                const newUrl = new URL(newUrlBase);
+                for (const [key, value] of url.searchParams) { 
+                    if(!key.startsWith('_')){
+                        newUrl.searchParams.append(key, value);
+                    }
+                }
+
+                console.log('navigate to', newUrl.toString())
+                window.location = newUrl;
+            })
+        </script>
+    </body>
+</html>

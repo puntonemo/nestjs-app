@@ -20,7 +20,7 @@ export class User {
     @Expose({ groups: ['admin'] })
     public twitterid?: string;
     @Expose({ groups: ['admin'] })
-    public credentials?: string[] = [];
+    public devices?: any[] = [];
     @Expose({ groups: ['admin'] })
     public authenticators?: string[] = [];
     @Expose({ groups: ['admin'] })
@@ -64,8 +64,6 @@ export class User {
     public lastSignInAt?: string;
     @Expose({ groups: ['admin'] })
     public challenge?: object;
-    @Expose({ groups: ['admin'] })
-    public partnerId?: number;
     @Expose({ groups: ['admin'] })
     public createdBy?: string;
     @Expose({ groups: ['admin'] })
@@ -114,3 +112,13 @@ export class User {
     //*
     //*********************************************************************/
 }
+
+export type UserDevice = {
+    id: string;
+    type: 'device' | 'credential' | 'key';
+    algorithm?: string;
+    deviceInfo?: any;
+    publicKey?: string;
+    registeredAtRemoteAddress?: number;
+    registeredAt?: string;
+};

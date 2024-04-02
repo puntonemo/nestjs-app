@@ -44,7 +44,7 @@ class <%-model_name%>Adapter {<%
     @Type(() => <%-adapItemConvertType%>)<%}
             if (adaptItem.alias) {%>
     @Expose({ toPlainOnly: true, name: '<%-adaptItem.name%>' })<%}%>
-    "<%-adaptItem.alias || adaptItem.name%>"?: <%-adapItemType%>;<%
+    '<%-adaptItem.alias || adaptItem.name%>'?: <%-adapItemType%>;<%
             }
         }
     }%>
@@ -69,6 +69,13 @@ class Create<%-model_name%>Adapter extends <%-model_name%>Adapter {<%
     id?: any;
 }
 const tableName = '<%-model_name_plural_lowercase%>';
+<%if (locals?.findables) {%>
+const dbAlias = {<%
+    for (const findable of findables) { if(findable !== 'id') {%>
+    '<%=findable%>': '<%=repository.adapter.find(i=>i.name==findable)?.alias || findable%>',<%
+    }}%>
+    'id' : '_id'
+};<%}%>
 
 @Injectable()
 export class <%-model_name_plural%>Repository {
@@ -97,37 +104,56 @@ export class <%-model_name_plural%>Repository {
     }
     async findAll(filters?: Find<%-model_name%>Dto) {
         const database = await this.mongoDBService.getDefaultDatabase();
-        // const page = filters?.page ?? 1;
+        const page = filters?.page ?? 1;
         const pageSize = filters?.pageSize ?? 10;
-
+        const skip = pageSize * (page - 1);
+        let count = 0;
+        let data = undefined;
         const pipeline = [];
-
+        const order = {};
+        const match = {};
+    <%if(locals?.findables){
+        for (const findable of findables) {
+            if(findable === 'id'){%>
         if (filters?.id)
-            pipeline.push({ $match: { _id: new ObjectId(filters.id) } });
-
-//        if (filters?.description)
-//            pipeline.push({
-//                $match: { description: new RegExp(filters.description, 'i') }
-//            });
-//
-//        if (filters?.title)
-//            pipeline.push({
-//                $match: { title: new RegExp(filters.title, 'i') }
-//            });
+            match['_id'] = new ObjectId(filters.id);
+            <%} else
+            if (attributes.find(i=>i.name==findable).type == 'string') {%>
+        if (filters?.<%=findable%>)
+            match[dbAlias['<%=findable%>']] = new RegExp(filters.<%=findable%>, 'i');
+        <%}else{%>
+        if (filters?.<%=findable%>)
+            match[dbAlias['<%=findable%>']] = filters.<%=findable%>;
+            <%}
+        }
+    }%>
 
         if (filters?.order)
-            pipeline['$sort'][filters?.order] = filters.ascending ? 1 : -1;
+            order[dbAlias[filters.order]] = filters.ascending ? 1 : -1;
 
-        pipeline.push({ $limit: pageSize });
-        const data = await database
-            .collection(tableName)
-            .aggregate(pipeline)
-            .toArray();
+        if (Object.keys(match).length > 0) pipeline.push({ $match: match });
+        if (Object.keys(order).length > 0) pipeline.push({ $sort: order });
+
+        if (filters.count)
+            count = (
+                await database
+                    .collection(tableName)
+                    .aggregate([...pipeline, { $count: 'count' }])
+                    .toArray()
+            )[0].count;
+
+        if (filters.data)
+            data = await database
+                .collection(tableName)
+                .aggregate([...pipeline, { $skip: skip }, { $limit: pageSize }])
+                .toArray();
 
         return {
-            data: this.getInstance(this.adapt(data), 'admin') ?? []
-            //count: count ?? undefined
-        };
+            data: filters.data
+                ? this.getInstance(this.adapt(data), 'admin') ?? []
+                : undefined,
+            count: filters.count ? count : undefined
+        }
     }
     async findOne(id: string) {
         const { data } = await this.findAll({ id } as Find<%-model_name%>Dto);

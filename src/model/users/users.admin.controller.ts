@@ -9,7 +9,7 @@ import {
     UseGuards,
     Query
 } from '@nestjs/common';
-import { UsersService } from './users.admin.service';
+import { UsersAdminService } from './users.admin.service';
 import { User, CreateUserDto, UpdateUserDto, FindUserDto } from '@model/users';
 import { JwtAuthGuard } from '@lib/auth/guards/jwt.guard';
 import { AuthUser } from '@lib/auth/decorators/user.decorator';
@@ -20,7 +20,7 @@ import { PermissionsGuard } from '@lib/auth/guards/permission.guard';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Permission('users_management')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+    constructor(private readonly usersService: UsersAdminService) {}
 
     @Post()
     create(@Body() createUserDto: CreateUserDto, @AuthUser() user: User) {

@@ -2,11 +2,9 @@ import {
     IsArray,
     IsBoolean,
     IsEmail,
-    IsNumber,
     IsOptional,
     IsString
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 const DEFAULT_USER_ROLES = ['user'];
 
@@ -31,7 +29,7 @@ export class CreateUserDto {
     @IsBoolean()
     active?: boolean = true;
     @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    partnerId?: number;
+    liveid?: string;
+    @IsOptional()
+    googleid?: string;
 }

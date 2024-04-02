@@ -11,9 +11,11 @@ import {
     plainToClass,
     plainToInstance
 } from 'class-transformer';
-import { User, CreateUserDto, FindUserDto, UpdateUserDto } from '.';
+import { User, CreateUserDto, FindUserDto, UserDevice } from '.';
+import { UpdateUserDto } from './users.dto.update';
 import { MongoDBService } from '@lib/database';
 import { ObjectId } from 'mongodb';
+import { IsOptional } from 'class-validator';
 
 class UserAdapter {
     //* MONGODB REPOSITORY
@@ -27,11 +29,39 @@ class CreateUserAdapter extends UserAdapter {
     @Exclude()
     id?: any;
 }
+class RepositoryUpdateUserDto extends UpdateUserDto {
+    @IsOptional()
+    devices?: any[];
+}
 const tableName = 'users';
 
 @Injectable()
 export class UsersRepository {
     constructor(private readonly mongoDBService: MongoDBService) {}
+    async findByCredential(
+        credentialId: string,
+        schema = 'admin'
+    ): Promise<User | undefined> {
+        const database = await this.mongoDBService.getDefaultDatabase();
+        const data = await database
+            .collection(tableName)
+            .findOne({ 'devices.id': credentialId });
+        return this.getInstance(this.adapt(data), schema);
+    }
+    async addCredential(id: string, device: UserDevice) {
+        const user = (await this.find({
+            id: id.toString(),
+            single: true
+        })) as any;
+
+        const devices = user.devices || [];
+
+        devices.push(device);
+
+        this.update(user.id, {
+            devices
+        });
+    }
     async create(createUserDto: CreateUserDto, user?: User) {
         const database = await this.mongoDBService.getDefaultDatabase();
         const newUser = {
@@ -59,52 +89,71 @@ export class UsersRepository {
             throw new InternalServerErrorException(error);
         }
     }
-    async findAll(filters?: FindUserDto, schema = 'admin') {
+    async find(filters?: FindUserDto, schema = 'admin') {
         const database = await this.mongoDBService.getDefaultDatabase();
-        // const page = filters?.page ?? 1;
-        const pageSize = filters?.pageSize ?? 10;
+        const page = filters?.single ? 1 : filters?.page ?? 1;
+        const pageSize = filters?.single ? 1 : filters?.pageSize ?? 10;
+        const skip = pageSize * (page - 1);
+        if (!filters.data) filters.data = true;
 
+        let count = 0;
+        let data = undefined;
         const pipeline = [];
+        const order = {};
+        const match = {};
 
         if (filters?.id)
             pipeline.push({ $match: { _id: new ObjectId(filters.id) } });
 
-        if (filters?.partnerId)
-            pipeline.push({ $match: { partnerId: filters.partnerId } });
-
         if (filters?.email) pipeline.push({ $match: { email: filters.email } });
+
+        if (filters?.googleid)
+            pipeline.push({ $match: { googleid: filters.googleid } });
+
+        if (filters?.liveid)
+            pipeline.push({ $match: { liveid: filters.liveid } });
 
         if (filters?.order)
             pipeline['$sort'][filters?.order] = filters.ascending ? 1 : -1;
 
-        pipeline.push({ $limit: pageSize });
-        const data = await database
-            .collection(tableName)
-            .aggregate(pipeline)
-            .toArray();
+        if (filters?.order) order[filters.order] = filters.ascending ? 1 : -1;
 
-        return {
-            data: this.getInstance(this.adapt(data), schema) ?? []
-            //count: count ?? undefined
-        };
+        if (Object.keys(match).length > 0) pipeline.push({ $match: match });
+        if (Object.keys(order).length > 0) pipeline.push({ $sort: order });
+
+        if (filters.count)
+            count = (
+                await database
+                    .collection(tableName)
+                    .aggregate([...pipeline, { $count: 'count' }])
+                    .toArray()
+            )[0].count;
+
+        if (filters.data)
+            data = await database
+                .collection(tableName)
+                .aggregate([...pipeline, { $skip: skip }, { $limit: pageSize }])
+                .toArray();
+
+        if (filters.single)
+            return data?.length > 0
+                ? this.getInstance(this.adapt(data[0]), schema)
+                : undefined;
+        else
+            return {
+                data: filters.data
+                    ? this.getInstance(this.adapt(data), schema) ?? []
+                    : undefined,
+                count: filters.count ? count : undefined
+            };
     }
-    async findOne(id: string) {
-        const { data } = await this.findAll({ id } as FindUserDto);
-
-        if (!data || (data as any[]).length < 1) throw new NotFoundException();
-
-        return this.getInstance(this.adapt(data[0]), 'admin');
-    }
-    async findByEmail(email: string, schema = 'admin') {
-        const { data } = await this.findAll({ email } as FindUserDto, schema);
-
-        if (!data || (data as any[]).length < 1) throw new NotFoundException();
-
-        return this.getInstance(this.adapt(data[0]), schema);
-    }
-    async update(id: string, updateUserDto: UpdateUserDto, user?: User) {
+    async update(
+        id: string,
+        updateUserDto: RepositoryUpdateUserDto,
+        user?: User
+    ) {
         const database = await this.mongoDBService.getDefaultDatabase();
-        const existingUser = await this.findOne(id);
+        const existingUser = (await this.find({ id, single: true })) as User;
 
         if (!existingUser) throw new NotFoundException();
 

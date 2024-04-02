@@ -1,31 +1,20 @@
-import { Transform } from 'class-transformer';
-import {
-    IsArray,
-    IsBoolean,
-    IsNumber,
-    IsOptional,
-    IsString
-} from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class UpdateUserDto {
     @IsOptional()
     @IsString()
-    firstname: string;
+    firstname?: string;
     @IsOptional()
     @IsString()
-    lastname: string;
+    lastname?: string;
     @IsOptional()
-    picture: string;
+    picture?: string;
     @IsOptional()
     @IsArray()
-    roles: string[];
+    roles?: string[];
     @IsOptional()
-    phone: string;
+    phone?: string;
     @IsOptional()
     @IsBoolean()
-    active: boolean = true;
-    @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    partnerId: number;
+    active?: boolean = true;
 }

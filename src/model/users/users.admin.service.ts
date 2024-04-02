@@ -8,22 +8,22 @@ import {
 } from '@model/users';
 
 @Injectable()
-export class UsersService {
+export class UsersAdminService {
     constructor(private readonly usersRepository: UsersRepository) {}
     create(createUserDto: CreateUserDto, user?: User) {
         return this.usersRepository.create(createUserDto, user);
     }
 
     findAll(filters: FindUserDto) {
-        return this.usersRepository.findAll(filters);
+        return this.usersRepository.find(filters);
     }
 
     findOne(id: string) {
-        return this.usersRepository.findOne(id);
+        return this.usersRepository.find({ id, single: true });
     }
 
     update(id: string, updateUserDto: UpdateUserDto, user?: User) {
-        return this.usersRepository.update(id, updateUserDto, user);
+        return this.usersRepository.update(id, updateUserDto as User, user);
     }
 
     remove(id: string) {

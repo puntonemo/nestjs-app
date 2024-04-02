@@ -8,28 +8,33 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <ul class="navbar-nav mr-auto">
+        <% if(locals.user) {%>
           <li class="nav-item">
-            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="/auth/profile">My Profile</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/about">About</a>
+            <a class="nav-link" href="/auth/signout">Sign Out</a>
           </li>
+        <% } else {%>
+          <li class="nav-item">
+            <a class="nav-link" href="/auth/signin">Sign In</a>
+          </li>
+        <% } %>
         </ul>
       </nav>
 </header>
 
 <main>
-  <div class="jumbotron">
-    <h1><%-title%></h1>
-    <p><%-subtitle%></p>
-    <%if(locals.foo) {%>
-    <p><%-foo%></p>
-    <%}%>
-    <form method="post">
-      <input type="text" name="foo" value="bar">
-      <button class="btn btn-primary btn-lg disabled" id="submitButton" type="submit">Submit</button>
-    </form>
-  </div>
+  <div class="container">
+    <% if(locals.user) {%>
+      <h1>Welcome back, <%=user.firstname%>!</h1>
+      <p>You are signed in</p>
+      
+    <% } else {%>
+      <h1>Welcome</h1>
+      <p>Please, <a href="/auth/signin">sign In</a> to continue</p>
+    <% } %>    
+    </div>
 </main>
 <footer>
 </footer>

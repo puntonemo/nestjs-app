@@ -26,6 +26,7 @@ export class MicrosoftStrategy extends PassportStrategy(Strategy, 'microsoft') {
             firstName: name.givenName,
             lastName: name.familyName,
             picture: photos?.length > 0 ? photos[0].value : undefined,
+            liveid: profile.id,
             accessToken
         };
         done(null, user);

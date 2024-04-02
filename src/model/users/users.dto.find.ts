@@ -3,32 +3,40 @@ import { IsEmail, IsNumber, IsOptional } from 'class-validator';
 
 export class FindUserDto {
     @IsOptional()
-    id: string;
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    id?: string;
     @IsOptional()
     @IsEmail()
-    email: string;
+    email?: string;
     @IsOptional()
-    order: string;
+    order?: string;
     @IsOptional()
-    ascending: boolean;
-    @IsOptional()
-    @Transform(({ value }) => parseInt(value))
-    @IsNumber()
-    page: number = 1;
+    ascending?: boolean;
     @IsOptional()
     @Transform(({ value }) => parseInt(value))
     @IsNumber()
-    pageSize: number = 10;
+    page?: number = 1;
     @IsOptional()
     @Transform(({ value }) => parseInt(value))
     @IsNumber()
-    partnerId: number;
+    pageSize?: number = 10;
     @IsOptional()
-    schema: string;
+    @Transform(({ value }) => parseInt(value))
+    @IsNumber()
+    partnerId?: number;
     @IsOptional()
-    count: 'exact' | 'planned' | 'estimated';
+    googleid?: string;
     @IsOptional()
-    data: boolean;
+    liveid?: string;
     @IsOptional()
-    role: string;
+    schema?: string;
+    @IsOptional()
+    count?: 'exact' | 'planned' | 'estimated';
+    @IsOptional()
+    data?: boolean = true;
+    @IsOptional()
+    single?: boolean = false;
+    @IsOptional()
+    role?: string;
 }
